@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model aggregated_client_deals {
+  client          String
+  term_start_from Int
+  term_start_to   Int
+  total_deal_size BigInt
+
+  @@id([client, term_start_from])
+}
+
+model allocator_generated_reports {
+  id         Int      @id @default(autoincrement())
+  address    String
+  address_id String
+  name       String
+  url        String
+  created_at DateTime @default(now()) @db.Timestamp(6)
+
+  @@index([address_id], map: "allocator_generated_reports_address_id_index")
+  @@index([address], map: "allocator_generated_reports_address_index")
+}
+
+model cid_sharing {
+  client           String
+  other_client     String
+  unique_cid_count Int
+  total_deal_size  BigInt
+
+  @@id([client, other_client])
+}
+
+model generated_reports {
+  id                Int      @id @default(autoincrement())
+  client_address_id String   @db.VarChar
+  file_path         String   @db.VarChar
+  created_at        DateTime @default(now()) @db.Timestamp(6)
+
+  @@index([client_address_id], map: "generated_reports_client_address_id_index")
+}
+
+model pgmigrations {
+  id     Int      @id @default(autoincrement())
+  name   String   @db.VarChar(255)
+  run_on DateTime @db.Timestamp(6)
+}
+
+model provider_distribution {
+  client           String
+  provider         String
+  total_deal_size  BigInt
+  unique_data_size BigInt
+
+  @@id([client, provider])
+}
+
+model providers {
+  provider     String @id
+  first_client String
+}
+
+model replica_distribution {
+  client           String
+  num_of_replicas  Int
+  total_deal_size  BigInt
+  unique_data_size BigInt
+
+  @@id([client, num_of_replicas])
+}
