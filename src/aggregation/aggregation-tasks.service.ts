@@ -11,7 +11,9 @@ export class AggregationTasksService {
   @Cron(CronExpression.EVERY_HOUR)
   async runAggregationJob() {
     this.logger.debug('Starting Aggregations');
+
     await this.aggregationService.runAggregations();
+
     this.logger.debug('Finished Aggregations');
   }
 }

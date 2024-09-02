@@ -1,0 +1,902 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/clientDmob"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DMOB_DATABASE_URL")
+}
+
+model address_cache {
+  id         Int      @id(map: "PK_7086b0337382332f7754417881e") @default(autoincrement())
+  addressId  String   @db.VarChar
+  address    String   @db.VarChar
+  isMultisig Boolean
+  createdAt  DateTime @default(now()) @db.Timestamp(6)
+
+  @@index([addressId], map: "IDX_6bd12a25b5f74dfccc76300dcb")
+  @@index([address], map: "IDX_e9ada8c47739d7a22f6aaaa999")
+}
+
+model allocator_info {
+  id                    Int      @id(map: "PK_23545a4260d449ddbafd796a9da") @default(autoincrement())
+  applicationNumber     String?  @db.VarChar
+  address               String?  @db.VarChar
+  addressId             String?  @db.VarChar
+  name                  String   @default(dbgenerated("false")) @db.VarChar
+  organization          String   @default(dbgenerated("false")) @db.VarChar
+  allocationBookkeeping String   @default(dbgenerated("false")) @db.VarChar
+  fullInfo              Json     @default("{}")
+  createdAt             DateTime @default(now()) @db.Timestamp(6)
+  updatedAt             DateTime @default(now()) @db.Timestamp(6)
+}
+
+model api_key {
+  id       Int     @id(map: "PK_b1bd840641b8acbaad89c3d8d11") @default(autoincrement())
+  githubId String? @unique(map: "UQ_384628c976a3af0cf44c3621382") @db.VarChar
+  key      String? @db.VarChar
+  isAdmin  Boolean @default(false)
+}
+
+model api_key_request {
+  id        Int     @id(map: "PK_4a9d639027a6e62439ee697dcc2") @default(autoincrement())
+  githubId  String? @unique(map: "UQ_e942bf3926406b9d64290946156") @db.VarChar
+  challenge String? @db.VarChar
+}
+
+model api_key_usage {
+  id              Int     @id(map: "PK_1dfaaf6fd004e3fe39e513b58f2") @default(autoincrement())
+  route           String? @db.VarChar
+  key             String? @db.VarChar
+  ip              String? @db.VarChar
+  timestamp       Int?
+  statusCode      Int?
+  statusCodeClass String? @db.VarChar
+}
+
+model backfill_ranges {
+  hashId           String @id(map: "PK_3f0643c2310b4c9873a9040cfc1") @db.VarChar
+  start            Int
+  end              Int
+  crt              Int
+  crtForProcessing Int?
+}
+
+model bot_event {
+  id             Int                      @id(map: "PK_4791f5ac719725923355b53c6ab") @default(autoincrement())
+  createdAt      DateTime                 @default(now()) @db.Timestamp(6)
+  environment    String?                  @db.VarChar
+  repo           String?                  @db.VarChar
+  issueNumber    String?                  @db.VarChar
+  timeStamp      DateTime?                @db.Timestamp(6)
+  eventType      bot_event_eventtype_enum @default(create_application)
+  params         Json                     @default("{}")
+  allocationUUID String?                  @db.VarChar
+}
+
+model client_uuid {
+  id      Int     @id(map: "PK_ee8b8cca46a6991127e0f7cf301") @default(autoincrement())
+  uuid    String  @db.VarChar
+  ghLogin String? @unique(map: "UQ_4ba3a4e838f69b9ba5ec807d8fb") @db.VarChar
+  ghId    Int     @unique(map: "UQ_d7e11ff89141fb62b9e2660706f")
+}
+
+model cron_running_state {
+  id                     Int     @id(map: "PK_7e8db3b75b09b220991bb1183e9") @default(autoincrement())
+  key                    String? @db.VarChar
+  isRunning              Boolean @default(false)
+  lastRunHasError        Boolean @default(false)
+  lastRunError           String  @default("") @db.VarChar
+  crtRunStartTimestamp   Int     @default(1725257534)
+  lastRunStartTimestamp  Int     @default(1725257534)
+  lastRunFinishTimestamp Int     @default(1725257534)
+}
+
+model dc_allocated_to_clients_grouped_by_verifiers_wow {
+  id                Int     @id(map: "PK_54eb8a45a66093ae0499009d53b") @default(autoincrement())
+  startHeight       Int?
+  endHeight         Int?
+  year              Int?
+  week              Int?
+  verifierAddressId String? @db.VarChar
+  amount            String? @db.VarChar
+}
+
+model dc_allocated_to_clients_total_by_week {
+  id          Int     @id(map: "PK_dbb1c2b1e809c2c583c3e5a23ad") @default(autoincrement())
+  startHeight Int?
+  year        Int?
+  week        Int?
+  amount      String? @db.VarChar
+}
+
+model dc_allocation {
+  id           Int      @id(map: "PK_b1e7f6876cac1591e2cc354dc6c") @default(autoincrement())
+  allocationId Int?
+  clientId     String?  @db.VarChar
+  providerId   String?  @db.VarChar
+  removed      Boolean? @default(false)
+  pieceCid     String?  @db.VarChar
+  pieceSize    Int?
+  termMax      Int?
+  termMin      Int?
+  expiration   Int?
+  createdAt    DateTime @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime @default(now()) @db.Timestamp(6)
+}
+
+model dc_allocation_claim {
+  id            Int      @id(map: "PK_56bda14d434729996b2195143ff")
+  type          String?  @db.VarChar
+  clientId      String?  @db.VarChar
+  providerId    String?  @db.VarChar
+  sectorId      String?  @db.VarChar
+  removed       Boolean? @default(false)
+  pieceCid      String?  @db.VarChar
+  pieceSize     Decimal? @db.Decimal
+  termMax       Int?
+  prevTermMax   Int?
+  termMin       Int?
+  termStart     Int?
+  expiration    Int?
+  createdAt     DateTime @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime @default(now()) @db.Timestamp(6)
+  isDDO         Boolean?
+  isMixedSector Boolean? @default(false)
+  dealId        Int      @default(0)
+
+  @@index([clientId], map: "dc_allocation_claim_clientid_index")
+}
+
+model dc_claim {
+  id          Int      @id(map: "PK_3fba7f73baf06e9c751117c3ba6") @default(autoincrement())
+  claimId     Int?
+  clientId    String?  @db.VarChar
+  providerId  String?  @db.VarChar
+  sectorId    String?  @db.VarChar
+  removed     Boolean? @default(false)
+  pieceCid    String?  @db.VarChar
+  pieceSize   Int?
+  termMax     Int?
+  prevTermMax Int?
+  termMin     Int?
+  expiration  Int?
+  createdAt   DateTime @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime @default(now()) @db.Timestamp(6)
+}
+
+model dc_used_by_clients_wow {
+  id              Int     @id(map: "PK_0df800e66ff014a1a82e879deb8") @default(autoincrement())
+  startHeight     Int?
+  endHeight       Int?
+  year            Int?
+  week            Int?
+  clientAddressId String? @db.VarChar
+  amount          String? @db.VarChar
+}
+
+model dc_verifier_update {
+  id         Int      @id(map: "PK_20c9861bd150a84260ccba8a34d") @default(autoincrement())
+  hashId     String?  @db.VarChar
+  type       String?  @db.VarChar
+  clientId   String?  @db.VarChar
+  verifierId String?  @db.VarChar
+  dcAmount   Decimal? @db.Decimal
+  height     Int?
+  createdAt  DateTime @default(now()) @db.Timestamp(6)
+  updatedAt  DateTime @default(now()) @db.Timestamp(6)
+}
+
+model event_log {
+  id                Int      @id(map: "PK_d8ccd9b5b44828ea378dd37e691") @default(autoincrement())
+  hashId            String?  @db.VarChar
+  msgCid            String?  @db.VarChar
+  tipsetKey         String?  @db.VarChar
+  height            Int?
+  reverted          Boolean  @default(false)
+  emitter           String   @default(dbgenerated("false")) @db.VarChar
+  error             String   @default(dbgenerated("false")) @db.VarChar
+  createdAt         DateTime @default(now()) @db.Timestamp(6)
+  updatedAt         DateTime @default(now()) @db.Timestamp(6)
+  type              String?  @db.VarChar
+  allocationClaimId String?  @db.VarChar
+  entries           Json     @default("{}")
+  backfilled        Boolean  @default(false)
+  processed         Boolean  @default(false)
+
+  @@index([hashId], map: "event_log_hashid_index")
+  @@index([height], map: "event_log_height_index")
+}
+
+model failed_decode_log {
+  id        Int      @id(map: "PK_3b3d0f842198fd26027957e88a6") @default(autoincrement())
+  hashId    String?  @db.VarChar
+  event     Json     @default("{}")
+  error     String   @default(dbgenerated("false")) @db.VarChar
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @db.Timestamp(6)
+}
+
+model filfox_message {
+  id     Int     @id(map: "PK_77f4a58512c9647266aebd43847") @default(autoincrement())
+  msgCID String? @db.VarChar
+  height Int?
+  from   String? @db.VarChar
+  to     String? @db.VarChar
+  method String? @db.VarChar
+}
+
+model gh_allocation_info {
+  id        String @id(map: "PK_6a7d1f28395e38ce8c4b4938142") @db.VarChar
+  clientId  String @db.VarChar
+  type      String @db.VarChar
+  createdAt String @db.VarChar
+  updatedAt String @db.VarChar
+  active    String @db.VarChar
+  amount    String @db.VarChar
+}
+
+model gh_allocation_signer_info {
+  id             Int    @id(map: "PK_7d2ed241c7087cc376e89cfe49c") @default(autoincrement())
+  allocationId   String @db.VarChar
+  ghUsername     String @db.VarChar
+  signingAddress String @db.VarChar
+  createdAt      String @db.VarChar
+  msgCid         String @db.VarChar
+}
+
+model gh_allocator_info {
+  id                    Int      @id(map: "PK_57cc3700681c6adf4059eaf7c05") @default(autoincrement())
+  applicationNumber     String?  @db.VarChar
+  address               String?  @db.VarChar
+  addressId             String?  @db.VarChar
+  name                  String   @default(dbgenerated("false")) @db.VarChar
+  organization          String   @default(dbgenerated("false")) @db.VarChar
+  allocationBookkeeping String   @default(dbgenerated("false")) @db.VarChar
+  fullInfo              Json     @default("{}")
+  createdAt             DateTime @default(now()) @db.Timestamp(6)
+  updatedAt             DateTime @default(now()) @db.Timestamp(6)
+}
+
+model gh_client_info {
+  id        String @id(map: "PK_d46fc268761b6ed0faadc09c444") @db.VarChar
+  version   String @db.VarChar
+  url       String @db.VarChar
+  client    Json   @default("{}")
+  project   Json   @default("{}")
+  datacap   Json   @default("{}")
+  lifecycle Json   @default("{}")
+}
+
+model gh_data_cap_request {
+  id                Int      @id(map: "PK_66414562324dc76d6fee91a0172") @default(autoincrement())
+  messageId         String?  @unique(map: "uniqueMessageId") @db.VarChar
+  issueId           Int?     @unique(map: "uniqueIssueId")
+  verifierAddressId String?  @db.VarChar
+  applicantName     String?  @db.VarChar
+  applicantLocation String?  @db.VarChar
+  createdAt         DateTime @default(now()) @db.Timestamp(6)
+}
+
+model gh_datacap_allocation_request_comment {
+  id                  Int               @id(map: "PK_61819a35123c2a949a0418f7884") @default(autoincrement())
+  createdAt           DateTime          @default(now()) @db.Timestamp(6)
+  updatedAt           DateTime          @default(now()) @db.Timestamp(6)
+  commentCreatedAt    DateTime?         @db.Timestamp(6)
+  commentUpdatedAt    DateTime?         @db.Timestamp(6)
+  issueId             Int?
+  commentUrl          String            @db.VarChar
+  commentIsEdited     Boolean           @default(false)
+  approverGhUserId    Int
+  datacapRequestedRaw String            @db.VarChar
+  datacapRequested    Decimal?          @db.Decimal
+  clientAddress       String?           @db.VarChar
+  notaryAddress       String?           @db.VarChar
+  allocationUUID      String?           @db.VarChar
+  requestNumber       Int?
+  gh_datacap_issue    gh_datacap_issue? @relation(fields: [issueId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_3d7136e56b74e8c2a19c5a7d8c6")
+}
+
+model gh_datacap_allocation_signed_comment {
+  id                  Int               @id(map: "PK_02bfe05f90851fa4c6eba21a0e3") @default(autoincrement())
+  createdAt           DateTime          @default(now()) @db.Timestamp(6)
+  updatedAt           DateTime          @default(now()) @db.Timestamp(6)
+  commentCreatedAt    DateTime?         @db.Timestamp(6)
+  commentUpdatedAt    DateTime?         @db.Timestamp(6)
+  issueId             Int?
+  commentUrl          String            @db.VarChar
+  commentIsEdited     Boolean           @default(false)
+  approverGhUserId    Int
+  datacapAllocatedRaw String            @db.VarChar
+  datacapAllocated    Decimal?          @db.Decimal
+  clientAddress       String?           @db.VarChar
+  signerAddress       String?           @db.VarChar
+  operationType       String?           @db.VarChar
+  messageCid          String?           @db.VarChar
+  allocationUUID      String?           @db.VarChar
+  gh_datacap_issue    gh_datacap_issue? @relation(fields: [issueId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_e5c0ffb67ed4487e8d5fee5ce0d")
+}
+
+model gh_datacap_issue {
+  id                                    Int                                     @id(map: "PK_ff94ef3049d7ad9bbde0cae77d3") @default(autoincrement())
+  issueNumber                           Int
+  issueUrl                              String                                  @db.VarChar
+  issueCreatedAt                        DateTime?                               @db.Timestamp(6)
+  datacapRequestedRaw                   String?                                 @db.VarChar
+  datacapRequested                      Decimal?                                @db.Decimal
+  issueClosedAt                         DateTime?                               @db.Timestamp(6)
+  labels                                Json?
+  user                                  Json?
+  gh_datacap_allocation_request_comment gh_datacap_allocation_request_comment[]
+  gh_datacap_allocation_signed_comment  gh_datacap_allocation_signed_comment[]
+  gh_datacap_request_comment            gh_datacap_request_comment[]
+}
+
+model gh_datacap_request_comment {
+  id                    Int               @id(map: "PK_0790021a53cdce98fb0a5ba53dd") @default(autoincrement())
+  createdAt             DateTime          @default(now()) @db.Timestamp(6)
+  updatedAt             DateTime          @default(now()) @db.Timestamp(6)
+  commentUrl            String            @db.VarChar
+  commentIsEdited       Boolean           @default(false)
+  commentIsLast         Boolean
+  approverGhUserId      Int
+  datacapRequestedRaw   String            @db.VarChar
+  datacapRequested      Decimal?          @db.Decimal
+  weeklyDatacapUsageRaw String            @db.VarChar
+  weeklyDatacapUsage    Decimal?          @db.Decimal
+  clientAddress         String?           @db.VarChar
+  commentCreatedAt      DateTime?         @db.Timestamp(6)
+  commentUpdatedAt      DateTime?         @db.Timestamp(6)
+  issueId               Int?
+  gh_datacap_issue      gh_datacap_issue? @relation(fields: [issueId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_98bc6befbc6f383cdf85e58061e")
+}
+
+model gh_issue {
+  id                         Int       @id(map: "PK_4eee22f9f051487c1d3737ef21c") @default(autoincrement())
+  issueId                    Int
+  repoId                     Int
+  closed                     Boolean   @default(false)
+  processedAllocationMessage Boolean   @default(false)
+  userHandle                 String?   @db.VarChar
+  commentsUrl                String?   @db.VarChar
+  gotResponse                Boolean?
+  gotAllocation              Boolean?
+  creationTimestamp          DateTime? @db.Timestamp(6)
+  firstResponseTimestamp     DateTime? @db.Timestamp(6)
+  startSigningTimestamp      DateTime? @db.Timestamp(6)
+  allocationMessageId        String?   @db.VarChar
+  clientName                 String?   @db.VarChar
+  clientAddress              String?   @db.VarChar
+  datacap                    String?   @db.VarChar
+  region                     String?   @db.VarChar
+  notaryRequestedName        String?   @db.VarChar
+}
+
+model glif_data_cap_request {
+  id        Int      @id(map: "PK_c6f5bea80fde0f77588424b10b3") @default(autoincrement())
+  messageId String?  @unique(map: "UQ_eb765abcbf86c289c0a86720253") @db.VarChar
+  githubId  String?  @db.VarChar
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+}
+
+model global_values {
+  id    Int     @id(map: "PK_6b2a646fc5634e9be5a70f84365") @default(autoincrement())
+  key   String? @db.VarChar
+  value String? @db.VarChar
+}
+
+model historic_data {
+  id     Int     @id(map: "PK_e811256d066ea8c508c3587641e") @default(autoincrement())
+  head   String? @db.VarChar
+  code   String? @db.VarChar
+  state  String? @db.VarChar
+  height Int?
+  status Int?    @default(0)
+}
+
+model leaderboard_api_key {
+  id       Int     @id(map: "PK_aeb78a7b07650798a9df3614151") @default(autoincrement())
+  githubId String? @unique(map: "UQ_32639d89ed887a159e64ad0826b") @db.VarChar
+  key      String? @db.VarChar
+}
+
+model leaderboard_api_key_request {
+  id        Int     @id(map: "PK_17cc840678aec9ca90fdefd7869") @default(autoincrement())
+  githubId  String? @unique(map: "UQ_eb7bcafb0d6af0b3ab9534d16de") @db.VarChar
+  challenge String? @db.VarChar
+}
+
+model leaderboard_processed_allocation_data {
+  id                Int      @id(map: "PK_c8124f6929ed9b5051203df0b29") @default(autoincrement())
+  addressId         String?  @db.VarChar
+  verifierAddressId String?  @db.VarChar
+  datacapReceived   Decimal? @db.Decimal
+  auditTrail        String?  @db.VarChar
+  dealType          String?  @db.VarChar
+  height            String?  @db.VarChar
+}
+
+model leaderboard_processed_data_for_verified_client {
+  id                       Int      @id(map: "PK_870824d075c7d2b6f3beae07096") @default(autoincrement())
+  addressId                String?  @db.VarChar
+  verifierAddressId        String?  @db.VarChar
+  datacapRemaining         Decimal? @db.Decimal
+  daTotalDatacapReceived   Decimal? @default(0) @db.Decimal
+  ldnTotalDatacapReceived  Decimal? @default(0) @db.Decimal
+  efilTotalDatacapReceived Decimal? @default(0) @db.Decimal
+  address                  String?  @db.VarChar
+  name                     String?  @db.VarChar
+  orgName                  String?  @db.VarChar
+  latestAllowanceHeight    String?  @db.VarChar
+}
+
+model leaderboard_processed_data_for_verifier {
+  id                                           Int      @id(map: "PK_1649f50164ad20a466a932a1afe") @default(autoincrement())
+  name                                         String?  @db.VarChar
+  orgName                                      String?  @db.VarChar
+  ghHandle                                     String?  @db.VarChar
+  ghProfilePicture                             String?  @db.VarChar
+  region                                       String?  @db.VarChar
+  addressId                                    String?  @unique(map: "UQ_14663b8487c3b6ab8290bf7fd65") @db.VarChar
+  address                                      String?  @db.VarChar
+  daTTDTotalDuration                           Int?     @default(0)
+  ldnTTDTotalDuration                          Int?     @default(0)
+  efilTTDTotalDuration                         Int?     @default(0)
+  daTTDNumberOfAllocations                     Int?     @default(0)
+  ldnTTDNumberOfAllocations                    Int?     @default(0)
+  efilTTDNumberOfAllocations                   Int?     @default(0)
+  ldnPreviousProposals                         Int      @default(0)
+  ldnPreviousApprovals                         Int      @default(0)
+  ldnTotalNumberOfSignatures                   Int      @default(0)
+  efilPreviousProposals                        Int      @default(0)
+  efilPreviousApprovals                        Int      @default(0)
+  efilTotalNumberOfSignatures                  Int      @default(0)
+  daDatacapAllocatedToClientsInTheLast2Weeks   Decimal? @default(0) @db.Decimal
+  daDatacapAllocatedToClientsInTheLast4Weeks   Decimal? @default(0) @db.Decimal
+  daDatacapAllocatedToClientsInTheLast6Weeks   Decimal? @default(0) @db.Decimal
+  daDatacapAllocatedToClientsInTheLast8Weeks   Decimal? @default(0) @db.Decimal
+  daDatacapAllocatedToClients                  Decimal? @default(0) @db.Decimal
+  ldnDatacapAllocatedToClientsInTheLast2Weeks  Decimal? @default(0) @db.Decimal
+  ldnDatacapAllocatedToClientsInTheLast4Weeks  Decimal? @default(0) @db.Decimal
+  ldnDatacapAllocatedToClientsInTheLast6Weeks  Decimal? @default(0) @db.Decimal
+  ldnDatacapAllocatedToClientsInTheLast8Weeks  Decimal? @default(0) @db.Decimal
+  ldnDatacapAllocatedToClients                 Decimal? @default(0) @db.Decimal
+  efilDatacapAllocatedToClientsInTheLast2Weeks Decimal? @default(0) @db.Decimal
+  efilDatacapAllocatedToClientsInTheLast4Weeks Decimal? @default(0) @db.Decimal
+  efilDatacapAllocatedToClientsInTheLast6Weeks Decimal? @default(0) @db.Decimal
+  efilDatacapAllocatedToClientsInTheLast8Weeks Decimal? @default(0) @db.Decimal
+  efilDatacapAllocatedToClients                Decimal? @default(0) @db.Decimal
+  daNumberOfUniqueClients                      Int?     @default(0)
+  ldnNumberOfUniqueClients                     Int?     @default(0)
+  efilNumberOfUniqueClients                    Int?     @default(0)
+  daDatacapAvailable                           Decimal? @default(0) @db.Decimal
+  numberOfGithubDiscussions                    Int      @default(0)
+  isMultisig                                   Boolean  @default(false)
+  allowanceArray                               Json     @default("{}")
+  numberOfIssuesCreated                        Int      @default(0)
+  isActive                                     Boolean  @default(true)
+  createdAtHeight                              Int?
+}
+
+model miner_info {
+  id                          Int      @id(map: "PK_fd882ecd019dd341d7072ea7b34") @default(autoincrement())
+  minerAddressId              String?  @db.VarChar
+  minDealSize                 Decimal? @db.Decimal
+  maxDealSize                 Decimal? @db.Decimal
+  rawPower                    Decimal? @db.Decimal
+  qualityAdjPower             Decimal? @db.Decimal
+  isoCode                     String?  @db.VarChar
+  region                      String?  @db.VarChar
+  freeSpace                   Decimal? @db.Decimal
+  storageDealsTotal           Int?
+  storageDealsNoPenalties     Int?
+  storageDealsAveragePrice    Decimal? @db.Decimal
+  storageDealsDataStored      Decimal? @db.Decimal
+  storageDealsSlashed         Int?
+  storageDealsTerminated      Int?
+  storageDealsFaultTerminated Int?
+  storageDealsRecent30days    Int?
+  verifiedDealsTotalSize      Decimal? @db.Decimal
+}
+
+model multisig_alert {
+  id             Int      @id(map: "PK_1a259f12720be6f7106b425a8ae") @default(autoincrement())
+  msigAddress    String?  @db.VarChar
+  addedSigners   String?  @db.VarChar
+  removedSigners String?  @db.VarChar
+  createdAt      DateTime @default(now()) @db.Timestamp(6)
+}
+
+model op_log {
+  id     Int  @id(map: "PK_e51bf25e905efa6a464a3b968eb") @default(autoincrement())
+  height Int? @unique(map: "UQ_a79debfbf137b497520cc64d3f4")
+  opType Int?
+}
+
+model processed_data_for_miner {
+  id             Int      @id(map: "PK_13f712285ddfec79e5206bc9627") @default(autoincrement())
+  provider       String?  @db.VarChar
+  noOfDeals      Int?
+  dealsTotalSize Decimal? @db.Decimal
+  noOfClients    Int?
+  avgDealLength  Decimal? @db.Decimal
+  avgDealPrice   Decimal? @db.Decimal
+  minDealSize    Decimal? @db.Decimal
+}
+
+model processed_data_for_stats {
+  id    Int    @id(map: "PK_486224ca7c45e55d529a24c4c19") @default(autoincrement())
+  key   String @db.VarChar
+  value String @db.VarChar
+}
+
+model processed_data_for_verified_client {
+  id                     Int      @id(map: "PK_29708920748f7576c29072083cf") @default(autoincrement())
+  addressId              String?  @db.VarChar
+  address                String?  @db.VarChar
+  retries                Int      @default(3)
+  auditTrail             String   @default("n/a") @db.VarChar
+  name                   String?  @db.VarChar
+  initialAllowance       Decimal? @db.Decimal
+  allowance              Decimal? @db.Decimal
+  verifierAddressId      String?  @db.VarChar
+  createdAtHeight        Int?
+  issueCreateTimestamp   Int?
+  createMessageTimestamp Int?
+  verifierName           String?  @db.VarChar
+  dealCount              Int?
+  providerCount          Int?
+  topProvider            String?  @db.VarChar
+  allowanceArray         Json     @default("{}")
+  receivedDatacapChange  String?  @db.VarChar
+  usedDatacapChange      String?  @db.VarChar
+  orgName                String?  @db.VarChar
+
+  @@unique([addressId, verifierAddressId], map: "uniqueProcessedDataVerifiedClient")
+}
+
+model processed_data_for_verified_client_ldn_allowances {
+  id                Int      @id(map: "PK_ef67857436233d0200fdd456f56") @default(autoincrement())
+  allowanceId       Int?     @unique(map: "UQ_87652bfb546371d004974d348d2")
+  clientAddressId   String?  @db.VarChar
+  clientAddress     String?  @db.VarChar
+  clientName        String?  @db.VarChar
+  verifierAddressId String?  @db.VarChar
+  verifierAddress   String?  @db.VarChar
+  verifierName      String?  @db.VarChar
+  auditTrail        String   @default("n/a") @db.VarChar
+  signers           Json     @default("{}")
+  allowanceNumber   Int
+  datacapAllocated  Decimal? @db.Decimal
+  height            Int
+  timestamp         Int?
+  ttd               Int?
+}
+
+model processed_data_for_verifier {
+  id                     Int      @id(map: "PK_51525890b072ad0fcd275bc1904") @default(autoincrement())
+  addressId              String?  @unique(map: "UQ_72157ee4f75e6a229c1b56fbd0d") @db.VarChar
+  address                String?  @db.VarChar
+  auditTrail             String   @default("n/a") @db.VarChar
+  retries                Int      @default(3)
+  name                   String?  @db.VarChar
+  removed                Boolean  @default(false)
+  initialAllowance       Decimal? @db.Decimal
+  allowance              Decimal? @db.Decimal
+  inffered               Boolean  @default(false)
+  isMultisig             Boolean  @default(false)
+  createdAtHeight        Int?
+  issueCreateTimestamp   Int?
+  createMessageTimestamp Int?
+  verifiedClientsCount   Int?
+  allowanceArray         Json     @default("{}")
+  receivedDatacapChange  String?  @db.VarChar
+  orgName                String?  @db.VarChar
+}
+
+model processed_data_last14_days_ttfd {
+  id                                  Int @id(map: "PK_d30ec83245c1189d6c25a64b8de") @default(autoincrement())
+  numberOfDirectVerifiedAllowances    Int @default(0)
+  totalTTDForDirectVerifiedAllowances Int @default(0)
+  numberOfLDNVerifiedAllowances       Int @default(0)
+  totalTTDForLDNVerifiedAllowances    Int @default(0)
+  timestamp                           Int
+}
+
+model processed_sector_events_data {
+  sector    Int
+  pieceCid  String   @db.VarChar
+  provider  String   @db.VarChar
+  pieceSize Decimal? @db.Decimal
+  height    Int
+
+  @@id([sector, pieceCid, provider], map: "PK_7fca81f5567b0f4ead92d193920")
+}
+
+model processed_weekly_data_for_client {
+  id              Int     @id(map: "PK_8d421dbd2570ec3db524fed4c61") @default(autoincrement())
+  addressId       String? @db.VarChar
+  incomingDatacap String  @default("0") @db.VarChar
+  outgoingDatacap String  @default("0") @db.VarChar
+  year            Int
+  week            Int
+}
+
+model processed_weekly_data_for_miner {
+  id        Int     @id(map: "PK_55bb4e9cd46e2a411c8045567e3") @default(autoincrement())
+  provider  String? @db.VarChar
+  noOfDeals Int     @default(0)
+  year      Int
+  week      Int
+}
+
+model processed_weekly_data_for_ttd {
+  id                                  Int @id(map: "PK_b0e84822032b76c2a16b5896a19") @default(autoincrement())
+  numberOfAutoVerifiedAllowances      Int @default(0)
+  totalTTDForAutoVerifiedAllowances   Int @default(0)
+  numberOfDirectVerifiedAllowances    Int @default(0)
+  totalTTDForDirectVerifiedAllowances Int @default(0)
+  numberOfLDNVerifiedAllowances       Int @default(0)
+  totalTTDForLDNVerifiedAllowances    Int @default(0)
+  year                                Int
+  week                                Int
+}
+
+model retriable_block {
+  id     Int  @id(map: "PK_63cb81fcf882e6c3b07429cc2fb") @default(autoincrement())
+  height Int? @unique(map: "UQ_2f1cdaa8fecb05c129d16fd671f")
+}
+
+model storage_market_message {
+  id                Int     @id(map: "PK_9eda45828e19f76029152ce2349") @default(autoincrement())
+  msgCID            String? @db.VarChar
+  alternateMsgCID   String? @db.VarChar
+  height            Int?
+  from              String? @db.VarChar
+  to                String? @db.VarChar
+  method            String? @db.VarChar
+  message           String? @db.VarChar
+  decodedParameters String? @db.VarChar
+  receipt           String? @db.VarChar
+  exitCode          Int?
+  decodedReceipt    String? @db.VarChar
+  processed         Boolean @default(false)
+  error             String  @default("") @db.VarChar
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model temp {
+  address String? @db.VarChar
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model temp_leaderboard_processed_data_for_verifier {
+  id                                           Int
+  name                                         String?  @db.VarChar
+  orgName                                      String?  @db.VarChar
+  ghHandle                                     String?  @db.VarChar
+  ghProfilePicture                             String?  @db.VarChar
+  region                                       String?  @db.VarChar
+  addressId                                    String?  @db.VarChar
+  address                                      String?  @db.VarChar
+  createdAtHeight                              Int?
+  daTTDTotalDuration                           Int?     @default(0)
+  ldnTTDTotalDuration                          Int?     @default(0)
+  efilTTDTotalDuration                         Int?     @default(0)
+  daTTDNumberOfAllocations                     Int?     @default(0)
+  ldnTTDNumberOfAllocations                    Int?     @default(0)
+  efilTTDNumberOfAllocations                   Int?     @default(0)
+  ldnPreviousProposals                         Int      @default(0)
+  ldnPreviousApprovals                         Int      @default(0)
+  ldnTotalNumberOfSignatures                   Int      @default(0)
+  efilPreviousProposals                        Int      @default(0)
+  efilPreviousApprovals                        Int      @default(0)
+  efilTotalNumberOfSignatures                  Int      @default(0)
+  daDatacapAllocatedToClientsInTheLast2Weeks   Decimal? @default(0) @db.Decimal
+  daDatacapAllocatedToClientsInTheLast4Weeks   Decimal? @default(0) @db.Decimal
+  daDatacapAllocatedToClientsInTheLast6Weeks   Decimal? @default(0) @db.Decimal
+  daDatacapAllocatedToClientsInTheLast8Weeks   Decimal? @default(0) @db.Decimal
+  daDatacapAllocatedToClients                  Decimal? @default(0) @db.Decimal
+  ldnDatacapAllocatedToClientsInTheLast2Weeks  Decimal? @default(0) @db.Decimal
+  ldnDatacapAllocatedToClientsInTheLast4Weeks  Decimal? @default(0) @db.Decimal
+  ldnDatacapAllocatedToClientsInTheLast6Weeks  Decimal? @default(0) @db.Decimal
+  ldnDatacapAllocatedToClientsInTheLast8Weeks  Decimal? @default(0) @db.Decimal
+  ldnDatacapAllocatedToClients                 Decimal? @default(0) @db.Decimal
+  efilDatacapAllocatedToClientsInTheLast2Weeks Decimal? @default(0) @db.Decimal
+  efilDatacapAllocatedToClientsInTheLast4Weeks Decimal? @default(0) @db.Decimal
+  efilDatacapAllocatedToClientsInTheLast6Weeks Decimal? @default(0) @db.Decimal
+  efilDatacapAllocatedToClientsInTheLast8Weeks Decimal? @default(0) @db.Decimal
+  efilDatacapAllocatedToClients                Decimal? @default(0) @db.Decimal
+  daNumberOfUniqueClients                      Int?     @default(0)
+  ldnNumberOfUniqueClients                     Int?     @default(0)
+  efilNumberOfUniqueClients                    Int?     @default(0)
+  daDatacapAvailable                           Decimal? @default(0) @db.Decimal
+  numberOfGithubDiscussions                    Int      @default(0)
+  numberOfIssuesCreated                        Int      @default(0)
+  isMultisig                                   Boolean  @default(false)
+  isActive                                     Boolean  @default(true)
+  allowanceArray                               Json     @default("{}")
+  ghUserIds                                    Json     @default("[]")
+  electionRound                                String   @default("") @db.VarChar
+  callsAttendedCount                           Int      @default(0)
+  latestRoundApplicationLink                   String   @default("") @db.VarChar
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model typeorm_metadata {
+  type     String  @db.VarChar
+  database String? @db.VarChar
+  schema   String? @db.VarChar
+  table    String? @db.VarChar
+  name     String? @db.VarChar
+  value    String?
+
+  @@ignore
+}
+
+model verif_reg_state {
+  id       Int     @id(map: "PK_f50d0ef0994940eeb9eef64466e") @default(autoincrement())
+  head     String? @db.VarChar
+  code     String? @db.VarChar
+  state    String? @db.VarChar
+  height   Int?
+  status   Int?    @default(0)
+  errorMsg String? @db.VarChar
+}
+
+model verified_client {
+  id                     Int      @id(map: "PK_97bc5b5b91a0e57c62bf9ea956d") @default(autoincrement())
+  addressId              String?  @db.VarChar
+  address                String?  @db.VarChar
+  verifierAddressId      String?  @db.VarChar
+  initialAllowance       Decimal? @db.Decimal
+  allowance              Decimal? @db.Decimal
+  createdAtHeight        Int?
+  auditTrail             String   @default("n/a") @db.VarChar
+  name                   String?  @db.VarChar
+  issueCreateTimestamp   Int?
+  createMessageTimestamp Int?
+  retries                Int      @default(3)
+  orgName                String?  @db.VarChar
+  region                 String?  @db.VarChar
+  website                String?  @db.VarChar
+  industry               String?  @db.VarChar
+
+  @@unique([addressId, verifierAddressId], map: "uniqueVerifiedClient")
+}
+
+model verified_client_allowance {
+  id                     Int      @id(map: "PK_ab34ec6cc64a603d6d37ad80837") @default(autoincrement())
+  addressId              String?  @db.VarChar
+  verifierAddressId      String?  @db.VarChar
+  height                 Int?
+  allowance              Decimal? @db.Decimal
+  auditTrail             String?  @db.VarChar
+  msgCID                 String?  @db.VarChar
+  issueCreateTimestamp   Int?
+  createMessageTimestamp Int?
+  retries                Int      @default(3)
+  error                  String   @default("") @db.VarChar
+  usedAllowance          Decimal  @default(0) @db.Decimal
+  hasRemainingAllowance  Boolean  @default(true)
+  allowanceTTD           Int?
+  isLdnAllowance         Boolean  @default(false)
+  isFromAutoverifier     Boolean  @default(false)
+  searchedByProposal     Boolean  @default(false)
+  isEFilAllowance        Boolean  @default(false)
+  issueCreator           String?  @db.VarChar
+  retrievalFrequency     String?  @default("") @db.VarChar
+  isDataPublic           String?  @default("") @db.VarChar
+  providerList           Json     @default("[]")
+}
+
+model verified_client_allowance_signer {
+  id                     Int     @id(map: "PK_711d4ac6ccc44acc5d2ac1c97c3") @default(autoincrement())
+  signerAddressId        String? @db.VarChar
+  signerAddress          String? @db.VarChar
+  msgCID                 String? @db.VarChar
+  allowanceId            Int
+  method                 Int
+  operationTTD           Int?
+  createMessageTimestamp Int?
+  createMessageHeight    Int?
+  auditTrail             String? @db.VarChar
+}
+
+model verified_deal {
+  id                      Int                      @id(map: "PK_8406445db38f14b4c99f12807dc") @default(autoincrement())
+  verifiedClientAddressId String?                  @db.VarChar
+  dealId                  Int?
+  pieceCID                String?                  @db.VarChar
+  provider                String?                  @db.VarChar
+  dealSize                Decimal?                 @db.Decimal
+  createdAtHeight         Int?
+  state                   verified_deal_state_enum @default(unknown)
+  verifierAddressId       String?                  @db.VarChar
+  startEpoch              Int?
+  inffered                Boolean                  @default(true)
+  storagePricePerEpoch    Decimal?                 @db.Decimal
+  endEpoch                Int?
+  allowanceId             Int?
+  msgID                   Int?
+  addedAtHeight           Int?
+  sectorId                String?                  @db.VarChar
+
+  @@index([dealId], map: "IDX_deal_id")
+  @@index([verifiedClientAddressId, createdAtHeight(sort: Desc)], map: "IDX_verified_client_address_id")
+  @@index([provider], map: "IDX_verified_deal_provider")
+}
+
+model verified_registry_message {
+  id                         Int     @id(map: "PK_a17807eaa54de7dd09def5febd4") @default(autoincrement())
+  msgCID                     String? @db.VarChar
+  height                     Int?
+  from                       String? @db.VarChar
+  to                         String? @db.VarChar
+  method                     String? @db.VarChar
+  message                    String? @db.VarChar
+  decodedParameters          String? @db.VarChar
+  receipt                    String? @db.VarChar
+  decodedParametersSecondary String? @db.VarChar
+  proposalId                 Int?
+  executed                   Boolean @default(false)
+  processed                  Boolean @default(false)
+  decodedReceipt             String? @db.VarChar
+  toAddressType              String? @db.VarChar
+  exitCode                   Int?
+  error                      String  @default("") @db.VarChar
+  alternateMsgCID            String? @db.VarChar
+}
+
+model verifier {
+  id                     Int      @id(map: "PK_b72ba840a5a8301e0a686fba6b0") @default(autoincrement())
+  addressId              String?  @unique(map: "UQ_bb51fdfa37c5db063577ccdbfdd") @db.VarChar
+  address                String?  @db.VarChar
+  initialAllowance       Decimal? @db.Decimal
+  allowance              Decimal? @db.Decimal
+  createdAtHeight        Int?
+  auditTrail             String   @default("n/a") @db.VarChar
+  inffered               Boolean  @default(false)
+  name                   String?  @db.VarChar
+  issueCreateTimestamp   Int?
+  createMessageTimestamp Int?
+  isMultisig             Boolean  @default(false)
+  retries                Int      @default(3)
+  removed                Boolean  @default(false)
+  orgName                String?  @db.VarChar
+}
+
+model verifier_allowance {
+  id                     Int      @id(map: "PK_c04e5ae813349d195e9208e5877") @default(autoincrement())
+  addressId              String?  @db.VarChar
+  height                 Int?
+  allowance              Decimal? @db.Decimal
+  verifierId             Int?
+  auditTrail             String?  @db.VarChar
+  msgCID                 String?  @db.VarChar
+  issueCreateTimestamp   Int?
+  createMessageTimestamp Int?
+  retries                Int      @default(3)
+  error                  String   @default("") @db.VarChar
+  auditStatus            String?  @db.VarChar
+}
+
+enum bot_event_eventtype_enum {
+  create_application
+  multisig_creation
+  first_datacap_request
+  datacap_allocation
+  subsequent_datacap_request
+  application_is_good
+  application_has_errors
+}
+
+enum verified_deal_state_enum {
+  active
+  unknown
+}
