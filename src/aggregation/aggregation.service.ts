@@ -1,23 +1,12 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { Pool } from 'pg';
-import { ConfigService } from '@nestjs/config';
+import { Injectable } from '@nestjs/common';
 import { PrismaDmobService } from '../db/prismaDmob.service';
 
 @Injectable()
 export class AggregationService {
-  private readonly logger = new Logger(AggregationService.name);
-  private readonly dmobPostgresPool: Pool;
-
-  constructor(
-    private readonly configService: ConfigService,
-    private readonly prismaDmobService: PrismaDmobService,
-  ) {
-    this.dmobPostgresPool = new Pool({
-      connectionString: configService.get<string>('DMOB_DATABASE_URL'),
-    });
-  }
+  constructor(private readonly prismaDmobService: PrismaDmobService) {}
 
   async runAggregations() {
+    //todo: implement
     console.log(await this.prismaDmobService.api_key.findMany());
   }
 }
