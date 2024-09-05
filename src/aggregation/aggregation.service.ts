@@ -1,12 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PrismaDmobService } from '../db/prismaDmob.service';
+import { AggregationRunner } from './aggregation-runner';
+import { PrismaService } from '../db/prisma.service';
 
 @Injectable()
 export class AggregationService {
-  constructor(private readonly prismaDmobService: PrismaDmobService) {}
+  constructor(
+    private readonly prismaDmobService: PrismaDmobService,
+    private readonly prismaService: PrismaService,
+    @Inject('AggregationRunner')
+    private readonly aggregationRunner: AggregationRunner[],
+  ) {}
 
   async runAggregations() {
-    //todo: implement
-    console.log(await this.prismaDmobService.api_key.findMany());
+    for (const aggregationRunner of this.aggregationRunner) {
+      aggregationRunner.run(this.prismaService, this.prismaDmobService);
+    }
   }
 }

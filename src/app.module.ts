@@ -7,6 +7,8 @@ import { AggregationTasksService } from './aggregation/aggregation-tasks.service
 import { AggregationService } from './aggregation/aggregation.service';
 import { PrismaService } from './db/prisma.service';
 import { PrismaDmobService } from './db/prismaDmob.service';
+import { ProviderRunner } from './aggregation/runners/provider.runner';
+import { ReplicaDistributionRunner } from './aggregation/runners/replica-disctribution.runner';
 
 @Module({
   imports: [ConfigModule.forRoot(), ScheduleModule.forRoot()],
@@ -17,6 +19,16 @@ import { PrismaDmobService } from './db/prismaDmob.service';
     AggregationTasksService,
     PrismaService,
     PrismaDmobService,
+    ProviderRunner,
+    ReplicaDistributionRunner,
+    {
+      provide: 'AggregationRunner',
+      useFactory: (providerRunner, replicaDistributionRunner) => [
+        providerRunner,
+        replicaDistributionRunner,
+      ],
+      inject: [ProviderRunner, ReplicaDistributionRunner],
+    },
   ],
 })
 export class AppModule {}
