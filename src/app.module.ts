@@ -8,7 +8,7 @@ import { AggregationService } from './aggregation/aggregation.service';
 import { PrismaService } from './db/prisma.service';
 import { PrismaDmobService } from './db/prismaDmob.service';
 import { ProviderRunner } from './aggregation/runners/provider.runner';
-import { ReplicaDistributionRunner } from './aggregation/runners/replica-disctribution.runner';
+import { ReplicaDistributionRunner } from './aggregation/runners/replica-distribution.runner';
 
 @Module({
   imports: [ConfigModule.forRoot(), ScheduleModule.forRoot()],
