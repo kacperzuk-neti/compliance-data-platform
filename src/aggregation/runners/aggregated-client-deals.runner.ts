@@ -3,24 +3,24 @@ import { PrismaDmobService } from 'src/db/prismaDmob.service';
 import { AggregationRunner } from '../aggregation-runner';
 import { AggregationTable } from '../aggregation-table';
 
-export class ReplicaDistributionRunner implements AggregationRunner {
-  getName(): string {
-    return 'Replica Distribution Aggregation Runner';
-  }
-
+export class AggregatedClientDealsRunner implements AggregationRunner {
   async run(
     prismaService: PrismaService,
     prismaDmobService: PrismaDmobService,
   ): Promise<void> {
     // todo: implement
-    console.log('retrieving and storing Replica Distributions');
+    console.log('retrieving and storing AggregatedClientDeals');
   }
 
   getFilledTables(): AggregationTable[] {
-    return [AggregationTable.ReplicaDistribution];
+    return [AggregationTable.AggregatedClientDeals];
   }
 
   getDependingTables(): AggregationTable[] {
-    return [AggregationTable.Providers];
+    return [AggregationTable.Providers, AggregationTable.ReplicaDistribution];
+  }
+
+  getName(): string {
+    return 'Aggregated Client Deals Aggregation Runner';
   }
 }

@@ -9,6 +9,7 @@ import { PrismaService } from './db/prisma.service';
 import { PrismaDmobService } from './db/prismaDmob.service';
 import { ProviderRunner } from './aggregation/runners/provider.runner';
 import { ReplicaDistributionRunner } from './aggregation/runners/replica-distribution.runner';
+import { AggregatedClientDealsRunner } from './aggregation/runners/aggregated-client-deals.runner';
 
 @Module({
   imports: [ConfigModule.forRoot(), ScheduleModule.forRoot()],
@@ -21,13 +22,23 @@ import { ReplicaDistributionRunner } from './aggregation/runners/replica-distrib
     PrismaDmobService,
     ProviderRunner,
     ReplicaDistributionRunner,
+    AggregatedClientDealsRunner,
     {
       provide: 'AggregationRunner',
-      useFactory: (providerRunner, replicaDistributionRunner) => [
-        providerRunner,
+      useFactory: (
         replicaDistributionRunner,
+        aggregatedClientDealsRunner,
+        providerRunner,
+      ) => [
+        replicaDistributionRunner,
+        aggregatedClientDealsRunner,
+        providerRunner,
       ],
-      inject: [ProviderRunner, ReplicaDistributionRunner],
+      inject: [
+        ReplicaDistributionRunner,
+        AggregatedClientDealsRunner,
+        ProviderRunner,
+      ],
     },
   ],
 })
