@@ -1,9 +1,12 @@
 export enum AggregationTable {
-  AggregatedClientDeals,
-  AllocatorGeneratedReports,
+  AllocatorsWeekly,
   CidSharing,
-  GeneratedReports,
-  ProviderDistribution,
-  Providers,
-  ReplicaDistribution,
+  ClientAllocatorDistributionWeekly,
+  ClientClaimsHourly,
+  ClientProviderDistributionWeekly,
+  ClientReplicaDistribution,
+  ProviderFirstClient,
+  ProviderRetrievabilityDaily,
+  ProvidersWeekly,
+  UnifiedVerifiedDealHourly,
 }
