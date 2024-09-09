@@ -7,9 +7,17 @@ import { AggregationTasksService } from './aggregation/aggregation-tasks.service
 import { AggregationService } from './aggregation/aggregation.service';
 import { PrismaService } from './db/prisma.service';
 import { PrismaDmobService } from './db/prismaDmob.service';
-import { ProviderRunner } from './aggregation/runners/provider.runner';
-import { ReplicaDistributionRunner } from './aggregation/runners/replica-distribution.runner';
-import { AggregatedClientDealsRunner } from './aggregation/runners/aggregated-client-deals.runner';
+
+import { AllocatorsRunner } from './aggregation/runners/allocators.runner';
+import { CidSharingRunner } from './aggregation/runners/cid-sharing.runner';
+import { ClientAllocatorDistributionRunner } from './aggregation/runners/client-allocator-distribution.runner';
+import { ClientClaimsRunner } from './aggregation/runners/client-claims.runner';
+import { ClientProviderDistributionRunner } from './aggregation/runners/client-provider-distribution.runner';
+import { ClientReplicaDistributionRunner } from './aggregation/runners/client-replica-distribution.runner';
+import { ProviderFirstClientRunner } from './aggregation/runners/provider-first-client.runner';
+import { ProviderRetrievabilityRunner } from './aggregation/runners/provider-retrievability.runner';
+import { ProvidersRunner } from './aggregation/runners/providers.runner';
+import { UnifiedVerifiedDealRunner } from './aggregation/runners/unified-verified-deal.runner';
 
 @Module({
   imports: [ConfigModule.forRoot(), ScheduleModule.forRoot()],
@@ -20,24 +28,52 @@ import { AggregatedClientDealsRunner } from './aggregation/runners/aggregated-cl
     AggregationTasksService,
     PrismaService,
     PrismaDmobService,
-    ProviderRunner,
-    ReplicaDistributionRunner,
-    AggregatedClientDealsRunner,
+    AllocatorsRunner,
+    CidSharingRunner,
+    ClientAllocatorDistributionRunner,
+    ClientClaimsRunner,
+    ClientProviderDistributionRunner,
+    ClientReplicaDistributionRunner,
+    ProviderFirstClientRunner,
+    ProviderRetrievabilityRunner,
+    ProvidersRunner,
+    UnifiedVerifiedDealRunner,
     {
       provide: 'AggregationRunner',
       useFactory: (
-        replicaDistributionRunner,
-        aggregatedClientDealsRunner,
-        providerRunner,
+        allocatorsRunner,
+        cidSharingRunner,
+        clientAllocatorDistributionRunner,
+        clientClaimsRunner,
+        clientProviderDistributionRunner,
+        clientReplicaDistributionRunner,
+        providerFirstClientRunner,
+        providerRetrievabilityRunner,
+        providersRunner,
+        unifiedVerifiedDealRunner,
       ) => [
-        replicaDistributionRunner,
-        aggregatedClientDealsRunner,
-        providerRunner,
+        allocatorsRunner,
+        cidSharingRunner,
+        clientAllocatorDistributionRunner,
+        clientClaimsRunner,
+        clientProviderDistributionRunner,
+        clientReplicaDistributionRunner,
+        providerFirstClientRunner,
+        providerRetrievabilityRunner,
+        providersRunner,
+        unifiedVerifiedDealRunner,
       ],
       inject: [
-        ReplicaDistributionRunner,
-        AggregatedClientDealsRunner,
-        ProviderRunner,
+        AllocatorsRunner,
+        CidSharingRunner,
+        ClientAllocatorDistributionRunner,
+        ClientClaimsRunner,
+        ClientProviderDistributionRunner,
+        ClientReplicaDistributionRunner,
+        ProviderFirstClientRunner,
+        ProviderRetrievabilityRunner,
+        ProvidersRunner,
+        UnifiedVerifiedDealRunner,
       ],
     },
   ],

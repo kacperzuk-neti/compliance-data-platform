@@ -3,24 +3,24 @@ import { PrismaDmobService } from 'src/db/prismaDmob.service';
 import { AggregationRunner } from '../aggregation-runner';
 import { AggregationTable } from '../aggregation-table';
 
-export class ReplicaDistributionRunner implements AggregationRunner {
-  getName(): string {
-    return 'Replica Distribution Aggregation Runner';
-  }
-
+export class ProviderRetrievabilityRunner implements AggregationRunner {
   async run(
     prismaService: PrismaService,
     prismaDmobService: PrismaDmobService,
   ): Promise<void> {
-    // todo: implement
-    console.log('retrieving and storing Replica Distributions');
+    // TODO - needs to download from filspark using HTTP
+    // TODO - needs to store some meta data in DB to only fetch once a day, despite being run hourly
   }
 
   getFilledTables(): AggregationTable[] {
-    return [AggregationTable.ReplicaDistribution];
+    return [AggregationTable.ProviderRetrievabilityDaily];
   }
 
   getDependingTables(): AggregationTable[] {
-    return [AggregationTable.Providers];
+    return [];
+  }
+
+  getName(): string {
+    return 'Provider Retrievability Runner';
   }
 }
