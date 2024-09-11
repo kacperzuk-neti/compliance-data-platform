@@ -9,18 +9,18 @@ export class ClientReplicaDistributionRunner implements AggregationRunner {
     prismaService: PrismaService,
     prismaDmobService: PrismaDmobService,
   ): Promise<void> {
-    const result = await prismaDmobService.$queryRawTyped(getClientReplicaDistribution());
+    const result = await prismaDmobService.$queryRawTyped(
+      getClientReplicaDistribution(),
+    );
 
-    const data = result.map((dmobResult) => (
-      {
-        client: dmobResult.client,
-        num_of_replicas: dmobResult.num_of_replicas,
-        total_deal_size: dmobResult.total_deal_size,
-        unique_data_size: dmobResult.unique_data_size,
-      }
-    ));
+    const data = result.map((dmobResult) => ({
+      client: dmobResult.client,
+      num_of_replicas: dmobResult.num_of_replicas,
+      total_deal_size: dmobResult.total_deal_size,
+      unique_data_size: dmobResult.unique_data_size,
+    }));
 
-    await prismaService.$executeRaw`truncate client_replica_distribution;`
+    await prismaService.$executeRaw`truncate client_replica_distribution;`;
     await prismaService.client_replica_distribution.createMany({ data });
   }
 

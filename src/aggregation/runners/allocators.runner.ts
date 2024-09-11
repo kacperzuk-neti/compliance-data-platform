@@ -11,18 +11,17 @@ export class AllocatorsRunner implements AggregationRunner {
   ): Promise<void> {
     const result = await prismaService.$queryRawTyped(getAllocatorsWeekly());
 
-    const data = result.map((row) => (
-      {
-        week: row.week,
-        allocator: row.allocator,
-        num_of_clients: row.num_of_clients,
-        biggest_client_sum_of_allocations: row.biggest_client_sum_of_allocations,
-        total_sum_of_allocations: row.total_sum_of_allocations,
-        avg_weighted_retrievability_success_rate: row.avg_weighted_retrievability_success_rate
-      }
-    ));
+    const data = result.map((row) => ({
+      week: row.week,
+      allocator: row.allocator,
+      num_of_clients: row.num_of_clients,
+      biggest_client_sum_of_allocations: row.biggest_client_sum_of_allocations,
+      total_sum_of_allocations: row.total_sum_of_allocations,
+      avg_weighted_retrievability_success_rate:
+        row.avg_weighted_retrievability_success_rate,
+    }));
 
-    await prismaService.$executeRaw`truncate allocators_weekly;`
+    await prismaService.$executeRaw`truncate allocators_weekly;`;
     await prismaService.allocators_weekly.createMany({ data });
   }
 
