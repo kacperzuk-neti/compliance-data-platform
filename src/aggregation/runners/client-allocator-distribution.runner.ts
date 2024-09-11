@@ -9,20 +9,22 @@ export class ClientAllocatorDistributionRunner implements AggregationRunner {
     prismaService: PrismaService,
     prismaDmobService: PrismaDmobService,
   ): Promise<void> {
-    const result = await prismaDmobService.$queryRawTyped(getClientAllocatorDistributionDaily());
+    const result = await prismaDmobService.$queryRawTyped(
+      getClientAllocatorDistributionDaily(),
+    );
 
-    const data = result.map((dmobResult) => (
-      {
-        week: dmobResult.week,
-        client: dmobResult.client,
-        allocator: dmobResult.allocator,
-        num_of_allocations: dmobResult.num_of_allocations,
-        sum_of_allocations: dmobResult.sum_of_allocations,
-      }
-    ));
+    const data = result.map((dmobResult) => ({
+      week: dmobResult.week,
+      client: dmobResult.client,
+      allocator: dmobResult.allocator,
+      num_of_allocations: dmobResult.num_of_allocations,
+      sum_of_allocations: dmobResult.sum_of_allocations,
+    }));
 
-    await prismaService.$executeRaw`truncate client_allocator_distribution_weekly;`
-    await prismaService.client_allocator_distribution_weekly.createMany({ data });
+    await prismaService.$executeRaw`truncate client_allocator_distribution_weekly;`;
+    await prismaService.client_allocator_distribution_weekly.createMany({
+      data,
+    });
   }
 
   getFilledTables(): AggregationTable[] {

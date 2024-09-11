@@ -11,14 +11,12 @@ export class ProviderFirstClientRunner implements AggregationRunner {
   ): Promise<void> {
     const result = await prismaService.$queryRawTyped(getProviderFirstClient());
 
-    const data = result.map((row) => (
-      {
-        provider: row.provider,
-        first_client: row.first_client,
-      }
-    ));
+    const data = result.map((row) => ({
+      provider: row.provider,
+      first_client: row.first_client,
+    }));
 
-    await prismaService.$executeRaw`truncate provider_first_client;`
+    await prismaService.$executeRaw`truncate provider_first_client;`;
     await prismaService.provider_first_client.createMany({ data });
   }
 

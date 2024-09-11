@@ -9,20 +9,22 @@ export class ClientProviderDistributionRunner implements AggregationRunner {
     prismaService: PrismaService,
     prismaDmobService: PrismaDmobService,
   ): Promise<void> {
-    const result = await prismaDmobService.$queryRawTyped(getClientProviderDistributionWeekly());
+    const result = await prismaDmobService.$queryRawTyped(
+      getClientProviderDistributionWeekly(),
+    );
 
-    const data = result.map((dmobResult) => (
-      {
-        week: dmobResult.week,
-        client: dmobResult.client,
-        provider: dmobResult.provider,
-        total_deal_size: dmobResult.total_deal_size,
-        unique_data_size: dmobResult.unique_data_size,
-      }
-    ));
+    const data = result.map((dmobResult) => ({
+      week: dmobResult.week,
+      client: dmobResult.client,
+      provider: dmobResult.provider,
+      total_deal_size: dmobResult.total_deal_size,
+      unique_data_size: dmobResult.unique_data_size,
+    }));
 
-    await prismaService.$executeRaw`truncate client_provider_distribution_weekly;`
-    await prismaService.client_provider_distribution_weekly.createMany({ data });
+    await prismaService.$executeRaw`truncate client_provider_distribution_weekly;`;
+    await prismaService.client_provider_distribution_weekly.createMany({
+      data,
+    });
   }
 
   getFilledTables(): AggregationTable[] {

@@ -11,15 +11,13 @@ export class ClientClaimsRunner implements AggregationRunner {
   ): Promise<void> {
     const result = await prismaService.$queryRawTyped(getClientClaimsHourly());
 
-    const data = result.map((row) => (
-      {
-        hour: row.hour,
-        client: row.client,
-        total_deal_size: row.total_deal_size,
-      }
-    ));
+    const data = result.map((row) => ({
+      hour: row.hour,
+      client: row.client,
+      total_deal_size: row.total_deal_size,
+    }));
 
-    await prismaService.$executeRaw`truncate client_claims_hourly;`
+    await prismaService.$executeRaw`truncate client_claims_hourly;`;
     await prismaService.client_claims_hourly.createMany({ data });
   }
 

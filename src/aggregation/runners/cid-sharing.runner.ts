@@ -11,16 +11,14 @@ export class CidSharingRunner implements AggregationRunner {
   ): Promise<void> {
     const result = await prismaDmobService.$queryRawTyped(getCidSharing());
 
-    const data = result.map((dmobResult) => (
-      {
-        client: dmobResult.client,
-        other_client: dmobResult.other_client,
-        total_deal_size: dmobResult.total_deal_size,
-        unique_cid_count: dmobResult.unique_cid_count,
-      }
-    ));
+    const data = result.map((dmobResult) => ({
+      client: dmobResult.client,
+      other_client: dmobResult.other_client,
+      total_deal_size: dmobResult.total_deal_size,
+      unique_cid_count: dmobResult.unique_cid_count,
+    }));
 
-    await prismaService.$executeRaw`truncate cid_sharing;`
+    await prismaService.$executeRaw`truncate cid_sharing;`;
     await prismaService.cid_sharing.createMany({ data });
   }
 

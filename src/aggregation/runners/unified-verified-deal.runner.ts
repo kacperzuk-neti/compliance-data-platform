@@ -9,19 +9,19 @@ export class UnifiedVerifiedDealRunner implements AggregationRunner {
     prismaService: PrismaService,
     prismaDmobService: PrismaDmobService,
   ): Promise<void> {
-    const result = await prismaDmobService.$queryRawTyped(getUnifiedVerifiedDealHourly());
+    const result = await prismaDmobService.$queryRawTyped(
+      getUnifiedVerifiedDealHourly(),
+    );
 
-    const data = result.map((dmobResult) => (
-      {
-        hour: dmobResult.hour,
-        client: dmobResult.client,
-        provider: dmobResult.provider,
-        num_of_claims: dmobResult.num_of_claims,
-        total_deal_size: dmobResult.total_deal_size,
-      }
-    ));
+    const data = result.map((dmobResult) => ({
+      hour: dmobResult.hour,
+      client: dmobResult.client,
+      provider: dmobResult.provider,
+      num_of_claims: dmobResult.num_of_claims,
+      total_deal_size: dmobResult.total_deal_size,
+    }));
 
-    await prismaService.$executeRaw`truncate unified_verified_deal_hourly;`
+    await prismaService.$executeRaw`truncate unified_verified_deal_hourly;`;
     await prismaService.unified_verified_deal_hourly.createMany({ data });
   }
 
