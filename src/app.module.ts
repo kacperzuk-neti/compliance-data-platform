@@ -18,9 +18,15 @@ import { ProviderFirstClientRunner } from './aggregation/runners/provider-first-
 import { ProviderRetrievabilityRunner } from './aggregation/runners/provider-retrievability.runner';
 import { ProvidersRunner } from './aggregation/runners/providers.runner';
 import { UnifiedVerifiedDealRunner } from './aggregation/runners/unified-verified-deal.runner';
+import { HttpModule } from '@nestjs/axios';
+import { FilSparkService } from './filspark/filspark.service';
 
 @Module({
-  imports: [ConfigModule.forRoot(), ScheduleModule.forRoot()],
+  imports: [
+    ConfigModule.forRoot(),
+    ScheduleModule.forRoot(),
+    HttpModule.register({ timeout: 5000 }),
+  ],
   controllers: [AppController],
   providers: [
     AppService,
@@ -28,6 +34,7 @@ import { UnifiedVerifiedDealRunner } from './aggregation/runners/unified-verifie
     AggregationTasksService,
     PrismaService,
     PrismaDmobService,
+    FilSparkService,
     AllocatorsRunner,
     CidSharingRunner,
     ClientAllocatorDistributionRunner,

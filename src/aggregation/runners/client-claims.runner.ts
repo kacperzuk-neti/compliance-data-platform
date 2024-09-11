@@ -1,5 +1,6 @@
 import { PrismaService } from 'src/db/prisma.service';
 import { PrismaDmobService } from 'src/db/prismaDmob.service';
+import { FilSparkService } from 'src/filspark/filspark.service';
 import { AggregationRunner } from '../aggregation-runner';
 import { AggregationTable } from '../aggregation-table';
 import { getClientClaimsHourly } from '../../../prisma/generated/client/sql';
@@ -8,6 +9,7 @@ export class ClientClaimsRunner implements AggregationRunner {
   async run(
     prismaService: PrismaService,
     _prismaDmobService: PrismaDmobService,
+    _filSparkService: FilSparkService,
   ): Promise<void> {
     const result = await prismaService.$queryRawTyped(getClientClaimsHourly());
 
