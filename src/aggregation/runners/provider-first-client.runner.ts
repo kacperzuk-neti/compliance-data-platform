@@ -7,7 +7,7 @@ import { getProviderFirstClient } from '../../../prisma/generated/client/sql';
 export class ProviderFirstClientRunner implements AggregationRunner {
   async run(
     prismaService: PrismaService,
-    prismaDmobService: PrismaDmobService,
+    _prismaDmobService: PrismaDmobService,
   ): Promise<void> {
     const result = await prismaService.$queryRawTyped(getProviderFirstClient());
 

@@ -5,8 +5,8 @@ import { AggregationTable } from '../aggregation-table';
 
 export class ProviderRetrievabilityRunner implements AggregationRunner {
   async run(
-    prismaService: PrismaService,
-    prismaDmobService: PrismaDmobService,
+    _prismaService: PrismaService,
+    _prismaDmobService: PrismaDmobService,
   ): Promise<void> {
     // TODO - needs to download from filspark using HTTP
     // TODO - needs to store some meta data in DB to only fetch once a day, despite being run hourly

@@ -7,7 +7,7 @@ import { getClientClaimsHourly } from '../../../prisma/generated/client/sql';
 export class ClientClaimsRunner implements AggregationRunner {
   async run(
     prismaService: PrismaService,
-    prismaDmobService: PrismaDmobService,
+    _prismaDmobService: PrismaDmobService,
   ): Promise<void> {
     const result = await prismaService.$queryRawTyped(getClientClaimsHourly());
 

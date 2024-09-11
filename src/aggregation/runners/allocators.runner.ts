@@ -7,7 +7,7 @@ import { getAllocatorsWeekly } from '../../../prisma/generated/client/sql';
 export class AllocatorsRunner implements AggregationRunner {
   async run(
     prismaService: PrismaService,
-    prismaDmobService: PrismaDmobService,
+    _prismaDmobService: PrismaDmobService,
   ): Promise<void> {
     const result = await prismaService.$queryRawTyped(getAllocatorsWeekly());
 
