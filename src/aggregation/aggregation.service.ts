@@ -3,6 +3,7 @@ import { PrismaDmobService } from '../db/prismaDmob.service';
 import { AggregationRunner } from './aggregation-runner';
 import { PrismaService } from '../db/prisma.service';
 import { AggregationTable } from './aggregation-table';
+import { FilSparkService } from 'src/filspark/filspark.service';
 
 @Injectable()
 export class AggregationService {
@@ -11,6 +12,7 @@ export class AggregationService {
   constructor(
     private readonly prismaDmobService: PrismaDmobService,
     private readonly prismaService: PrismaService,
+    private readonly filSparkService: FilSparkService,
     @Inject('AggregationRunner')
     private readonly aggregationRunners: AggregationRunner[],
   ) {}
@@ -37,6 +39,7 @@ export class AggregationService {
           await aggregationRunner.run(
             this.prismaService,
             this.prismaDmobService,
+            this.filSparkService,
           );
           this.logger.debug(`FINISHED: ${aggregationRunner.getName()}`);
           executedRunners++;
