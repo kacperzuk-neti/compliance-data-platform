@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AggregationTasksService } from './aggregation/aggregation-tasks.service';
@@ -20,6 +18,8 @@ import { ProvidersRunner } from './aggregation/runners/providers.runner';
 import { UnifiedVerifiedDealRunner } from './aggregation/runners/unified-verified-deal.runner';
 import { HttpModule } from '@nestjs/axios';
 import { FilSparkService } from './filspark/filspark.service';
+import { ProvidersController } from './controller/stats/providers/providers.controller';
+import { ProviderService } from './service/provider/provider.service';
 
 @Module({
   imports: [
@@ -27,9 +27,8 @@ import { FilSparkService } from './filspark/filspark.service';
     ScheduleModule.forRoot(),
     HttpModule.register({ timeout: 5000 }),
   ],
-  controllers: [AppController],
+  controllers: [ProvidersController],
   providers: [
-    AppService,
     AggregationService,
     AggregationTasksService,
     PrismaService,
@@ -45,6 +44,7 @@ import { FilSparkService } from './filspark/filspark.service';
     ProviderRetrievabilityRunner,
     ProvidersRunner,
     UnifiedVerifiedDealRunner,
+    ProviderService,
     {
       provide: 'AggregationRunner',
       useFactory: (
