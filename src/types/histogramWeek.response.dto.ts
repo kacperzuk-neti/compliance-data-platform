@@ -1,6 +1,6 @@
 import { HistogramWeekDto } from './histogramWeek.dto';
 
-export class ProviderClientsResponseDto {
+export class HistogramWeekResponseDto {
   total: number;
   results: HistogramWeekDto[];
 
