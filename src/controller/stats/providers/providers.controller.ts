@@ -9,4 +9,9 @@ export class ProvidersController {
   getProviderClients() {
     return this.providerService.getProviderClients();
   }
+
+  @Get('biggestClientDistribution')
+  getProviderBiggestClientDistribution() {
+    return this.providerService.getProviderBiggestClientDistribution();
+  }
 }
