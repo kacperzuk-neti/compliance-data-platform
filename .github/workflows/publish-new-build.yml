@@ -18,13 +18,17 @@ jobs:
   code-check:
     uses: ./.github/workflows/code-check.yml
   
-  check_db:
+  check-db:
+    needs: 
+      - code-check
     uses: ./.github/workflows/check-db.yml
 
   bump-version:
     runs-on: ubuntu-latest
-    needs: code-check
     if: ${{ github.ref_name == 'main' && inputs.version != '' }}
+    needs: 
+      - code-check
+      - check-db
 
     steps:
       - name: Checkout code
@@ -63,6 +67,7 @@ jobs:
   build-and-publish:
     needs:
       - code-check
+      - check-db
       - bump-version
     if: |
       always() &&

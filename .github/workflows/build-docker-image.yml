@@ -12,14 +12,9 @@ env:
   ECR_REPOSITORY: "compliance-data-platform"
 
 jobs:
-  check_db:
-    uses: ./.github/workflows/check-db.yml
-
   build_and_push:
     runs-on: ubuntu-latest
     environment: production-fidl
-    needs:
-      - check_db
 
     steps:
       - name: Checkout code
