@@ -93,5 +93,5 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           add-hosts: host.docker.internal:host-gateway
           secrets: |
-            DATABASE_URL=${{ secrets.DATABASE_URL }}
-            DMOB_DATABASE_URL=${{ secrets.DMOB_DATABASE_URL }}
+            DATABASE_URL=${{ env.DATABASE_URL }}
+            DMOB_DATABASE_URL=${{ env.DMOB_DATABASE_URL }}
