@@ -1,9 +1,6 @@
 name: Check linter, formatting, tests
 
-on:
- push:
-    branches:
-      - docker
+on: [push, pull_request]
 
 jobs:
   format_and_lint:
@@ -26,5 +23,11 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - run: npm ci
-      - run: npm run format
+      - name: Install deps
+        run: npm ci
+
+      - name: Code format
+        run: npm run format
+
+      - name: Lint code
+        run: npm run lint
