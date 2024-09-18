@@ -1,11 +1,6 @@
-name: Build docker image
+name: Check types and SQL
 on:
-  pull_request:
-    types: [opened, synchronize]
-  push:
-    branches:
-      - develop
-      - docker
+  workflow_call:
 
 jobs:
   build:

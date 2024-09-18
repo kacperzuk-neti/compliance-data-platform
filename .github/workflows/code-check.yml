@@ -1,6 +1,7 @@
 name: Check linter, formatting, tests
 
-on: [push, pull_request]
+on:
+  workflow_call:
 
 jobs:
   format_and_lint:
