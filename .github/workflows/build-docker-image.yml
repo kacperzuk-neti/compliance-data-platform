@@ -82,19 +82,16 @@ jobs:
       - name: Init dmob-like tmp db
         run: psql $DMOB_DATABASE_URL < ./ci/dmob-mock-db.sql
      
-      # - name: Build tag and push Docker image
-      #   uses: docker/build-push-action@v6
-      #   with:
-      #     context: .
-      #     push: true
-      #     tags: ${{ steps.meta.outputs.tags }}
-      #     cache-from: type=gha
-      #     cache-to: type=gha,mode=max
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
-      #     add-hosts: host.docker.internal:host-gateway
-      #     env: |
-      #       DATABASE_URL: ${{ env.DATABASE_URL }}
-      #       DMOB_DATABASE_URL: ${{ env.DMOB_DATABASE_URL }}
-      #     secrets: |
-      #       DATABASE_URL=${{ secrets.DATABASE_URL }}
-      #       DMOB_DATABASE_URL={{ secrets.DMOB_DATABASE_URL }}
+      - name: Build tag and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          add-hosts: host.docker.internal:host-gateway
+          secrets: |
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            DMOB_DATABASE_URL=${{ secrets.DMOB_DATABASE_URL }}
