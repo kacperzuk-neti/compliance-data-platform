@@ -91,7 +91,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          add-hosts: host.docker.internal:host-gateway
+          network: host
           secrets: |
             DATABASE_URL=${{ env.DATABASE_URL }}
             DMOB_DATABASE_URL=${{ env.DMOB_DATABASE_URL }}
