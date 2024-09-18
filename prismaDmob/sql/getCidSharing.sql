@@ -5,7 +5,9 @@ with
             "pieceCid",
             "pieceSize"
         from unified_verified_deal
-        where "termStart" >= 3847920 -- nv22 start
+        where
+            "termStart" >= 3847920 -- nv22 start
+            and "sectorId" != '0'
     ),
     cids as (
         select distinct

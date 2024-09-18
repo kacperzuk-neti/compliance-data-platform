@@ -6,7 +6,9 @@ with replicas as (
         sum("pieceSize") as total_deal_size,
         max("pieceSize") as piece_size
     from unified_verified_deal
-    where "termStart" >= 3847920 -- nv22 start
+    where
+        "termStart" >= 3847920 -- nv22 start
+        and "sectorId" != '0'
     group by
         client,
         piece_cid

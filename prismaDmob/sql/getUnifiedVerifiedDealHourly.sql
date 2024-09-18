@@ -5,7 +5,9 @@ select
     count(*)::int as num_of_claims,
     sum("pieceSize")::bigint as total_deal_size
 from unified_verified_deal
-where "termStart" >= 3847920 -- nv22 start
+where
+    "termStart" >= 3847920 -- nv22 start
+    and "sectorId" != '0'
 group by
     hour,
     client,
