@@ -10,7 +10,7 @@ export class ProvidersController {
     return this.providerService.getProviderClients();
   }
 
-  @Get('biggestClientDistribution')
+  @Get('biggest-client-distribution')
   getProviderBiggestClientDistribution() {
     return this.providerService.getProviderBiggestClientDistribution();
   }

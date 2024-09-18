@@ -2,13 +2,13 @@ export class HistogramDto {
   valueFromExclusive: number | null;
   valueToExclusive: number | null;
   week: Date;
-  count: string | null;
+  count: number | null;
 
   constructor(
     valueFromExclusive: number | null,
     valueToExclusive: number | null,
     week: Date,
-    count: string | null,
+    count: number | null,
   ) {
     this.valueFromExclusive = valueFromExclusive;
     this.valueToExclusive = valueToExclusive;

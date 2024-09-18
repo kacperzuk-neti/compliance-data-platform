@@ -17,10 +17,10 @@ export class ProviderService {
     const providerCount = await this.prismaService.$queryRaw<
       [
         {
-          count: bigint;
+          count: number;
         },
       ]
-    >`select count(distinct provider)
+    >`select count(distinct provider)::int
       from client_provider_distribution_weekly`;
 
     const results = await this.prismaService.$queryRawTyped(
@@ -37,7 +37,7 @@ export class ProviderService {
           r.value_from_exclusive,
           r.value_to_inclusive,
           r.week,
-          r.count.toString(),
+          r.count,
         );
       });
       histogramWeekDtos.push(
@@ -46,7 +46,7 @@ export class ProviderService {
     }
 
     return new HistogramWeekResponseDto(
-      Number(providerCount[0].count),
+      providerCount[0].count,
       histogramWeekDtos,
     );
   }
@@ -55,10 +55,10 @@ export class ProviderService {
     const providerCount = await this.prismaService.$queryRaw<
       [
         {
-          count: bigint;
+          count: number;
         },
       ]
-    >`select count(distinct provider)
+    >`select count(distinct provider)::int
       from client_provider_distribution_weekly`;
 
     const results = await this.prismaService.$queryRawTyped(
@@ -75,7 +75,7 @@ export class ProviderService {
           r.value_from_exclusive,
           r.value_to_inclusive,
           r.week,
-          r.count.toString(),
+          r.count,
         );
       });
       histogramWeekDtos.push(
@@ -84,7 +84,7 @@ export class ProviderService {
     }
 
     return new HistogramWeekResponseDto(
-      Number(providerCount[0].count),
+      providerCount[0].count,
       histogramWeekDtos,
     );
   }
