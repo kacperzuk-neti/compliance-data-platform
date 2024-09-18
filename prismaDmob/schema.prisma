@@ -1,6 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "./generated/client"
+  provider        = "prisma-client-js"
+  output          = "./generated/client"
   previewFeatures = ["typedSql"]
 }
 
@@ -89,9 +89,9 @@ model cron_running_state {
   isRunning              Boolean @default(false)
   lastRunHasError        Boolean @default(false)
   lastRunError           String  @default("") @db.VarChar
-  crtRunStartTimestamp   Int     @default(1725257534)
-  lastRunStartTimestamp  Int     @default(1725257534)
-  lastRunFinishTimestamp Int     @default(1725257534)
+  crtRunStartTimestamp   Int     @default(1725964567)
+  lastRunStartTimestamp  Int     @default(1725964567)
+  lastRunFinishTimestamp Int     @default(1725964567)
 }
 
 model dc_allocated_to_clients_grouped_by_verifiers_wow {
@@ -148,6 +148,7 @@ model dc_allocation_claim {
   dealId        Int      @default(0)
 
   @@index([clientId], map: "dc_allocation_claim_clientid_index")
+  @@index([clientId, sectorId, pieceCid, providerId], map: "dc_allocation_claim_clientid_sectorid_piececid_providerid_index")
 }
 
 model dc_claim {
@@ -885,6 +886,36 @@ model verifier_allowance {
   retries                Int      @default(3)
   error                  String   @default("") @db.VarChar
   auditStatus            String?  @db.VarChar
+}
+
+model migrations {
+  id        Int    @id(map: "PK_52c0aa36ad15cc87e5bab334659") @default(dbgenerated("nextval('_migrations_id_seq'::regclass)"))
+  timestamp BigInt
+  name      String @db.VarChar
+
+  @@map("_migrations")
+}
+
+model unified_verified_deal {
+  id         Int      @id(map: "PK_76f56333d366aa67ac747861bde") @default(autoincrement())
+  type       String?  @db.VarChar
+  clientId   String?  @db.VarChar
+  providerId String?  @db.VarChar
+  sectorId   String?  @db.VarChar
+  pieceCid   String?  @db.VarChar
+  pieceSize  Decimal? @db.Decimal
+  termMax    Int?
+  termMin    Int?
+  termStart  Int?
+  dealId     Int      @default(0)
+  createdAt  DateTime @default(now()) @db.Timestamp(6)
+  updatedAt  DateTime @default(now()) @db.Timestamp(6)
+  claimId    Int      @default(0)
+
+  @@index([clientId], map: "unified_verified_deal_clientid_index")
+  @@index([clientId, providerId, pieceCid, sectorId], map: "unified_verified_deal_composed_index")
+  @@index([dealId], map: "unified_verified_deal_dealid_index")
+  @@index([providerId], map: "unified_verified_deal_providerid_index")
 }
 
 enum bot_event_eventtype_enum {
