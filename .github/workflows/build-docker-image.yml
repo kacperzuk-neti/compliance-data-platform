@@ -15,6 +15,32 @@ jobs:
   build_and_push:
     runs-on: ubuntu-latest
     environment: production-fidl
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      postgresDmob:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5433:5432
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+      DMOB_DATABASE_URL: postgres://postgres:postgres@localhost:5433/postgres
 
     steps:
       - name: Checkout code
@@ -22,6 +48,9 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
+      - name: Install prisma
+        run: npm install prisma@latest
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -47,6 +76,12 @@ jobs:
             type=ref,event=branch,pattern={{branch}}
             type=ref,event=pr,pattern={{branch}}
 
+      - name: Init tmp db
+        run: npx prisma migrate reset --force --schema=./prisma/schema.prisma
+
+      - name: Init dmob-like tmp db
+        run: psql $DMOB_DATABASE_URL < ./ci/dmob-mock-db.sql
+     
       # - name: Build tag and push Docker image
       #   uses: docker/build-push-action@v6
       #   with:
@@ -56,3 +91,10 @@ jobs:
       #     cache-from: type=gha
       #     cache-to: type=gha,mode=max
       #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     add-hosts: host.docker.internal:host-gateway
+      #     env: |
+      #       DATABASE_URL: ${{ env.DATABASE_URL }}
+      #       DMOB_DATABASE_URL: ${{ env.DMOB_DATABASE_URL }}
+      #     secrets: |
+      #       DATABASE_URL=${{ secrets.DATABASE_URL }}
+      #       DMOB_DATABASE_URL={{ secrets.DMOB_DATABASE_URL }}
