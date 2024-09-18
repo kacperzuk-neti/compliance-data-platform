@@ -36,12 +36,11 @@ export class ProviderService {
         return new HistogramDto(
           r.value_from_exclusive,
           r.value_to_inclusive,
-          r.week,
           r.count,
         );
       });
       histogramWeekDtos.push(
-        new HistogramWeekDto(weekResponses[0].week, weekResponses),
+        new HistogramWeekDto(new Date(key), weekResponses),
       );
     }
 
@@ -74,12 +73,11 @@ export class ProviderService {
         return new HistogramDto(
           r.value_from_exclusive,
           r.value_to_inclusive,
-          r.week,
           r.count,
         );
       });
       histogramWeekDtos.push(
-        new HistogramWeekDto(weekResponses[0].week, weekResponses),
+        new HistogramWeekDto(new Date(key), weekResponses),
       );
     }
 
