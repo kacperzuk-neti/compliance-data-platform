@@ -26,3 +26,4 @@ COPY --from=builder --chown=node:node /app/prismaDmob/ ./prismaDmob/
 COPY ci/aws-secret-to-db-url.js ./
 COPY ci/runner.sh ./
 ENTRYPOINT [ "/app/runner.sh" ]
+CMD [ "node", "dist/main.js" ]

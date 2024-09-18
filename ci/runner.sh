@@ -9,5 +9,5 @@ if [ -z "$DATABASE_URL" ]; then
 fi
 
 if [ -n "$DATABASE_URL" ]; then
-    exec node dist/main.js
+    exec "$@"
 fi
