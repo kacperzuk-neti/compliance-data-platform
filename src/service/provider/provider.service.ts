@@ -40,7 +40,14 @@ export class ProviderService {
         );
       });
       histogramWeekDtos.push(
-        new HistogramWeekDto(new Date(key), weekResponses),
+        new HistogramWeekDto(
+          new Date(key),
+          weekResponses,
+          weekResponses.reduce(
+            (partialSum, response) => partialSum + response.count,
+            0,
+          ),
+        ),
       );
     }
 
@@ -77,7 +84,14 @@ export class ProviderService {
         );
       });
       histogramWeekDtos.push(
-        new HistogramWeekDto(new Date(key), weekResponses),
+        new HistogramWeekDto(
+          new Date(key),
+          weekResponses,
+          weekResponses.reduce(
+            (partialSum, response) => partialSum + response.count,
+            0,
+          ),
+        ),
       );
     }
 
