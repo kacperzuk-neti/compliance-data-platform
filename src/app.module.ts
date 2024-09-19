@@ -20,6 +20,8 @@ import { HttpModule } from '@nestjs/axios';
 import { FilSparkService } from './filspark/filspark.service';
 import { ProvidersController } from './controller/stats/providers/providers.controller';
 import { ProviderService } from './service/provider/provider.service';
+import { AllocatorsController } from './controller/stats/allocators/allocators.controller';
+import { AllocatorService } from './service/allocator/allocator.service';
 
 @Module({
   imports: [
@@ -27,7 +29,7 @@ import { ProviderService } from './service/provider/provider.service';
     ScheduleModule.forRoot(),
     HttpModule.register({ timeout: 5000 }),
   ],
-  controllers: [ProvidersController],
+  controllers: [ProvidersController, AllocatorsController],
   providers: [
     AggregationService,
     AggregationTasksService,
@@ -45,6 +47,7 @@ import { ProviderService } from './service/provider/provider.service';
     ProvidersRunner,
     UnifiedVerifiedDealRunner,
     ProviderService,
+    AllocatorService,
     {
       provide: 'AggregationRunner',
       useFactory: (

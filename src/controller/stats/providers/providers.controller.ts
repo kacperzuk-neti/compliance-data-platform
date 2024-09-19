@@ -6,17 +6,17 @@ export class ProvidersController {
   constructor(private readonly providerService: ProviderService) {}
 
   @Get('clients')
-  getProviderClients() {
-    return this.providerService.getProviderClients();
+  async getProviderClients() {
+    return await this.providerService.getProviderClients();
   }
 
   @Get('biggest-client-distribution')
-  getProviderBiggestClientDistribution() {
-    return this.providerService.getProviderBiggestClientDistribution();
+  async getProviderBiggestClientDistribution() {
+    return await this.providerService.getProviderBiggestClientDistribution();
   }
 
   @Get('retrievability')
-  getProviderRetrievability() {
-    return this.providerService.getProviderRetrievability();
+  async getProviderRetrievability() {
+    return await this.providerService.getProviderRetrievability();
   }
 }
