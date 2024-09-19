@@ -3,39 +3,20 @@ import { PrismaService } from '../../db/prisma.service';
 import {
   getProviderBiggestClientDistribution,
   getProviderClientsWeekly,
+  getProviderRetrievability,
 } from '../../../prisma/generated/client/sql';
 import { groupBy } from 'lodash';
 import { HistogramDto } from '../../types/histogram.dto';
 import { HistogramWeekDto } from '../../types/histogramWeek.dto';
 import { HistogramWeekResponseDto } from '../../types/histogramWeek.response.dto';
+import { ProviderRetrievabilityWeekResponseDto } from '../../types/providerRetrievabilityWeek.response.dto';
 
 @Injectable()
 export class ProviderService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async getProviderClients() {
-    return this.getWeeklyHistogramResult(
-      await this.prismaService.$queryRawTyped(getProviderClientsWeekly()),
-    );
-  }
-
-  async getProviderBiggestClientDistribution() {
-    return this.getWeeklyHistogramResult(
-      await this.prismaService.$queryRawTyped(
-        getProviderBiggestClientDistribution(),
-      ),
-    );
-  }
-
-  private async getWeeklyHistogramResult(
-    results: {
-      value_from_exclusive: number | null;
-      value_to_inclusive: number | null;
-      count: number | null;
-      week: Date;
-    }[],
-  ) {
-    const providerCount = await this.prismaService.$queryRaw<
+    const providerCountResult = await this.prismaService.$queryRaw<
       [
         {
           count: number;
@@ -44,6 +25,63 @@ export class ProviderService {
     >`select count(distinct provider)::int
       from client_provider_distribution_weekly`;
 
+    return this.getWeeklyHistogramResult(
+      await this.prismaService.$queryRawTyped(getProviderClientsWeekly()),
+      providerCountResult[0].count,
+    );
+  }
+
+  async getProviderBiggestClientDistribution() {
+    const providerCountResult = await this.prismaService.$queryRaw<
+      [
+        {
+          count: number;
+        },
+      ]
+    >`select count(distinct provider)::int
+      from client_provider_distribution_weekly`;
+
+    return this.getWeeklyHistogramResult(
+      await this.prismaService.$queryRawTyped(
+        getProviderBiggestClientDistribution(),
+      ),
+      providerCountResult[0].count,
+    );
+  }
+
+  async getProviderRetrievability() {
+    const providerCountAndAverageSuccessRate = await this.prismaService
+      .$queryRaw<
+      [
+        {
+          count: number;
+          averageSuccessRate: number;
+        },
+      ]
+    >`select count(distinct provider)::int,
+             100 * avg(success_rate) as "averageSuccessRate"
+      from provider_retrievability_daily;`;
+
+    const weeklyHistogramResult = await this.getWeeklyHistogramResult(
+      await this.prismaService.$queryRawTyped(getProviderRetrievability()),
+      providerCountAndAverageSuccessRate[0].count,
+    );
+
+    return ProviderRetrievabilityWeekResponseDto.of(
+      providerCountAndAverageSuccessRate[0].averageSuccessRate,
+      weeklyHistogramResult,
+    );
+  }
+
+  private async getWeeklyHistogramResult(
+    results: {
+      valueFromExclusive: number | null;
+      valueToInclusive: number | null;
+      count: number | null;
+      week: Date;
+    }[],
+    totalCount: number,
+  ) {
     const resultsByWeek = groupBy(results, (p) => p.week);
 
     const histogramWeekDtos: HistogramWeekDto[] = [];
@@ -51,8 +89,8 @@ export class ProviderService {
       const value = resultsByWeek[key];
       const weekResponses = value.map((r) => {
         return new HistogramDto(
-          r.value_from_exclusive,
-          r.value_to_inclusive,
+          r.valueFromExclusive,
+          r.valueToInclusive,
           r.count,
         );
       });
@@ -68,9 +106,6 @@ export class ProviderService {
       );
     }
 
-    return new HistogramWeekResponseDto(
-      providerCount[0].count,
-      histogramWeekDtos,
-    );
+    return new HistogramWeekResponseDto(totalCount, histogramWeekDtos);
   }
 }
