@@ -3,10 +3,10 @@ with providers_with_ratio as (select provider,
                                      week
                               from client_provider_distribution_weekly
                               group by provider, week)
-select 100 * ceil(biggest_to_total_ratio::float8 * 20) / 20 - 5 as "value_from_exclusive",
-       100 * ceil(biggest_to_total_ratio::float8 * 20) / 20     as "value_to_inclusive",
+select 100 * ceil(biggest_to_total_ratio::float8 * 20) / 20 - 5 as "valueFromExclusive",
+       100 * ceil(biggest_to_total_ratio::float8 * 20) / 20     as "valueToInclusive",
        count(*)::int as "count",
        week
 from providers_with_ratio
-group by "value_from_exclusive", "value_to_inclusive", week
+group by "valueFromExclusive", "valueToInclusive", week
 order by week, 1;

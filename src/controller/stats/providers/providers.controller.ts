@@ -14,4 +14,9 @@ export class ProvidersController {
   getProviderBiggestClientDistribution() {
     return this.providerService.getProviderBiggestClientDistribution();
   }
+
+  @Get('retrievability')
+  getProviderRetrievability() {
+    return this.providerService.getProviderRetrievability();
+  }
 }
