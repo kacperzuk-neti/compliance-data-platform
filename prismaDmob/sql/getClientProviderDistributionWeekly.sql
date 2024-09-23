@@ -7,7 +7,9 @@ with miner_pieces as (
         sum("pieceSize") as total_deal_size,
         min("pieceSize") as piece_size
     from unified_verified_deal
-    where "termStart" >= 3847920 -- nv22 start
+    where
+        "termStart" >= 3847920 -- nv22 start
+        and to_timestamp("termStart" * 30 + 1598306400) <= current_timestamp -- deals that didn't start yet
     group by
         week,
         client,
