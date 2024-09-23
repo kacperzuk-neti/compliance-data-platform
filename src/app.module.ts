@@ -22,6 +22,7 @@ import { ProvidersController } from './controller/stats/providers/providers.cont
 import { ProviderService } from './service/provider/provider.service';
 import { AllocatorsController } from './controller/stats/allocators/allocators.controller';
 import { AllocatorService } from './service/allocator/allocator.service';
+import { HistogramHelper } from './helper/histogram.helper';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { AllocatorService } from './service/allocator/allocator.service';
     UnifiedVerifiedDealRunner,
     ProviderService,
     AllocatorService,
+    HistogramHelper,
     {
       provide: 'AggregationRunner',
       useFactory: (
