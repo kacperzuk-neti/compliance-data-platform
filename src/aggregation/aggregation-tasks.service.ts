@@ -9,7 +9,7 @@ export class AggregationTasksService {
 
   constructor(private readonly aggregationService: AggregationService) {}
 
-  @Cron(CronExpression.EVERY_HOUR)
+  @Cron("59 19 * * * *")
   async runAggregationJob() {
     if (!this.aggregationJobInProgress) {
       this.aggregationJobInProgress = true;
