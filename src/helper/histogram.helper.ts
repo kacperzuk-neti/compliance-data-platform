@@ -39,6 +39,52 @@ export class HistogramHelper {
       );
     }
 
+    // calculate missing histogram buckets
+    const { maxMinSpan, allBucketTopValues } =
+      this.getAllHistogramBucketTopValues(histogramWeekDtos);
+
+    for (const histogramWeekDto of histogramWeekDtos) {
+      const missingValues = allBucketTopValues.filter(
+        (topValue) =>
+          !histogramWeekDto.results.some(
+            (p) => p.valueToExclusive === topValue,
+          ),
+      );
+
+      if (missingValues.length > 0) {
+        histogramWeekDto.results.push(
+          ...missingValues.map((v) => new HistogramDto(v - maxMinSpan, v, 0)),
+        );
+
+        histogramWeekDto.results.sort(
+          (a, b) => a.valueToExclusive - b.valueToExclusive,
+        );
+      }
+    }
+
     return new HistogramWeekResponseDto(totalCount, histogramWeekDtos);
+  }
+
+  private getAllHistogramBucketTopValues(
+    histogramWeekDtos: HistogramWeekDto[],
+  ) {
+    const maxRangeTopValue = Math.max(
+      ...histogramWeekDtos.flatMap((p) =>
+        p.results.map((r) => r.valueToExclusive),
+      ),
+    );
+
+    const maxHistogramEntry = histogramWeekDtos
+      .flatMap((p) => p.results)
+      .find((p) => p.valueToExclusive === maxRangeTopValue);
+
+    const maxMinSpan =
+      maxHistogramEntry.valueToExclusive - maxHistogramEntry.valueFromExclusive;
+
+    const allBucketTopValues: number[] = [];
+    for (let i = maxRangeTopValue; i > 0; i -= maxMinSpan) {
+      allBucketTopValues.push(i);
+    }
+    return { maxMinSpan, allBucketTopValues };
   }
 }
