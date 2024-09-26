@@ -5,7 +5,7 @@ import {
   getProviderClientsWeekly,
   getProviderRetrievability,
 } from '../../../prisma/generated/client/sql';
-import { ProviderRetrievabilityWeekResponseDto } from '../../types/providerRetrievabilityWeek.response.dto';
+import { RetrievabilityWeekResponseDto } from '../../types/retrievabilityWeekResponseDto';
 import { HistogramHelper } from '../../helper/histogram.helper';
 
 @Injectable()
@@ -68,7 +68,7 @@ export class ProviderService {
         providerCountAndAverageSuccessRate[0].count,
       );
 
-    return ProviderRetrievabilityWeekResponseDto.of(
+    return RetrievabilityWeekResponseDto.of(
       providerCountAndAverageSuccessRate[0].averageSuccessRate,
       weeklyHistogramResult,
     );

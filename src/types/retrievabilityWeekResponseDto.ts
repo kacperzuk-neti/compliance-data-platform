@@ -1,14 +1,14 @@
 import { HistogramWeekResponseDto } from './histogramWeek.response.dto';
 
-export class ProviderRetrievabilityWeekResponseDto {
+export class RetrievabilityWeekResponseDto {
   averageSuccessRate: number;
   histogram: HistogramWeekResponseDto;
 
   public static of(
     averageSuccessRate: number,
     histogram: HistogramWeekResponseDto,
-  ): ProviderRetrievabilityWeekResponseDto {
-    const dto = new ProviderRetrievabilityWeekResponseDto();
+  ): RetrievabilityWeekResponseDto {
+    const dto = new RetrievabilityWeekResponseDto();
 
     dto.averageSuccessRate = averageSuccessRate;
     dto.histogram = histogram;
