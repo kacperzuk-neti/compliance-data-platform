@@ -24,6 +24,10 @@ import { ProviderService } from './service/provider/provider.service';
 import { AllocatorsController } from './controller/stats/allocators/allocators.controller';
 import { AllocatorService } from './service/allocator/allocator.service';
 import { HistogramHelper } from './helper/histogram.helper';
+import { AllocatorsAccRunner } from './aggregation/runners/allocators-acc.runner';
+import { ClientAllocatorDistributionAccRunner } from './aggregation/runners/client-allocator-distribution-acc.runner';
+import { ClientProviderDistributionAccRunner } from './aggregation/runners/client-provider-distribution-acc.runner';
+import { ProvidersAccRunner } from './aggregation/runners/providers-acc.runner';
 
 @Module({
   imports: [
@@ -39,15 +43,19 @@ import { HistogramHelper } from './helper/histogram.helper';
     PrismaDmobService,
     FilSparkService,
     AllocatorsRunner,
+    AllocatorsAccRunner,
     CidSharingRunner,
     ClientAllocatorDistributionRunner,
+    ClientAllocatorDistributionAccRunner,
     ClientClaimsRunner,
     ClientProviderDistributionRunner,
+    ClientProviderDistributionAccRunner,
     ClientReplicaDistributionRunner,
     ProviderFirstClientRunner,
     ProviderRetrievabilityRunner,
     ProviderRetrievabilityBackfillRunner,
     ProvidersRunner,
+    ProvidersAccRunner,
     UnifiedVerifiedDealRunner,
     ProviderService,
     AllocatorService,
@@ -56,40 +64,52 @@ import { HistogramHelper } from './helper/histogram.helper';
       provide: 'AggregationRunner',
       useFactory: (
         allocatorsRunner,
+        allocatorsAccRunner,
         cidSharingRunner,
         clientAllocatorDistributionRunner,
+        clientAllocatorDistributionAccRunner,
         clientClaimsRunner,
         clientProviderDistributionRunner,
+        clientProviderDistributionAccRunner,
         clientReplicaDistributionRunner,
         providerFirstClientRunner,
         providerRetrievabilityRunner,
         providerRetrievabilityBackfillRunner,
         providersRunner,
+        providersAccRunner,
         unifiedVerifiedDealRunner,
       ) => [
         allocatorsRunner,
+        allocatorsAccRunner,
         cidSharingRunner,
         clientAllocatorDistributionRunner,
+        clientAllocatorDistributionAccRunner,
         clientClaimsRunner,
         clientProviderDistributionRunner,
+        clientProviderDistributionAccRunner,
         clientReplicaDistributionRunner,
         providerFirstClientRunner,
         providerRetrievabilityRunner,
         providerRetrievabilityBackfillRunner,
         providersRunner,
+        providersAccRunner,
         unifiedVerifiedDealRunner,
       ],
       inject: [
         AllocatorsRunner,
+        AllocatorsAccRunner,
         CidSharingRunner,
         ClientAllocatorDistributionRunner,
+        ClientAllocatorDistributionAccRunner,
         ClientClaimsRunner,
         ClientProviderDistributionRunner,
+        ClientProviderDistributionAccRunner,
         ClientReplicaDistributionRunner,
         ProviderFirstClientRunner,
         ProviderRetrievabilityRunner,
         ProviderRetrievabilityBackfillRunner,
         ProvidersRunner,
+        ProvidersAccRunner,
         UnifiedVerifiedDealRunner,
       ],
     },

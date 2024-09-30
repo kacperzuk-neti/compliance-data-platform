@@ -3,34 +3,34 @@ import { PrismaDmobService } from 'src/db/prismaDmob.service';
 import { FilSparkService } from 'src/filspark/filspark.service';
 import { AggregationRunner } from '../aggregation-runner';
 import { AggregationTable } from '../aggregation-table';
-import { getClientAllocatorDistributionWeekly } from '../../../prismaDmob/generated/client/sql';
+import { getClientProviderDistributionWeeklyAcc } from '../../../prismaDmob/generated/client/sql';
 
-export class ClientAllocatorDistributionRunner implements AggregationRunner {
+export class ClientProviderDistributionAccRunner implements AggregationRunner {
   async run(
     prismaService: PrismaService,
     prismaDmobService: PrismaDmobService,
     _filSparkService: FilSparkService,
   ): Promise<void> {
     const result = await prismaDmobService.$queryRawTyped(
-      getClientAllocatorDistributionWeekly(),
+      getClientProviderDistributionWeeklyAcc(),
     );
 
     const data = result.map((dmobResult) => ({
       week: dmobResult.week,
       client: dmobResult.client,
-      allocator: dmobResult.allocator,
-      num_of_allocations: dmobResult.num_of_allocations,
-      sum_of_allocations: dmobResult.sum_of_allocations,
+      provider: dmobResult.provider,
+      total_deal_size: dmobResult.total_deal_size,
+      unique_data_size: dmobResult.unique_data_size,
     }));
 
-    await prismaService.$executeRaw`truncate client_allocator_distribution_weekly;`;
-    await prismaService.client_allocator_distribution_weekly.createMany({
+    await prismaService.$executeRaw`truncate client_provider_distribution_weekly_acc;`;
+    await prismaService.client_provider_distribution_weekly_acc.createMany({
       data,
     });
   }
 
   getFilledTables(): AggregationTable[] {
-    return [AggregationTable.ClientAllocatorDistributionWeekly];
+    return [AggregationTable.ClientProviderDistributionWeeklyAcc];
   }
 
   getDependingTables(): AggregationTable[] {
@@ -38,6 +38,6 @@ export class ClientAllocatorDistributionRunner implements AggregationRunner {
   }
 
   getName(): string {
-    return 'Client/Allocator Distribution Runner';
+    return 'Client/Provider Distribution Acc Runner';
   }
 }
