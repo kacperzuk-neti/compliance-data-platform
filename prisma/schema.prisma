@@ -103,3 +103,45 @@ model provider_retrievability_daily {
 
   @@id([date, provider])
 }
+
+model client_allocator_distribution_weekly_acc {
+  week DateTime
+  client String
+  allocator String
+  num_of_allocations Int
+  sum_of_allocations BigInt
+  
+  @@id([week, client, allocator])
+}
+
+model client_provider_distribution_weekly_acc {
+  week DateTime
+  client String
+  provider String
+  total_deal_size BigInt
+  unique_data_size BigInt
+
+  @@id([week, client, provider])
+}
+
+model providers_weekly_acc {
+  week DateTime
+  provider String
+  num_of_clients Int
+  biggest_client_total_deal_size BigInt
+  total_deal_size BigInt
+  avg_retrievability_success_rate Float
+
+  @@id([week, provider])
+}
+
+model allocators_weekly_acc {
+  week DateTime
+  allocator String
+  num_of_clients Int
+  biggest_client_sum_of_allocations BigInt
+  total_sum_of_allocations BigInt
+  avg_weighted_retrievability_success_rate Float
+
+  @@id([week, allocator])
+}

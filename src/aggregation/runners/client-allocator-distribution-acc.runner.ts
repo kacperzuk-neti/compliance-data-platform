@@ -3,16 +3,16 @@ import { PrismaDmobService } from 'src/db/prismaDmob.service';
 import { FilSparkService } from 'src/filspark/filspark.service';
 import { AggregationRunner } from '../aggregation-runner';
 import { AggregationTable } from '../aggregation-table';
-import { getClientAllocatorDistributionWeekly } from '../../../prismaDmob/generated/client/sql';
+import { getClientAllocatorDistributionWeeklyAcc } from '../../../prismaDmob/generated/client/sql';
 
-export class ClientAllocatorDistributionRunner implements AggregationRunner {
+export class ClientAllocatorDistributionAccRunner implements AggregationRunner {
   async run(
     prismaService: PrismaService,
     prismaDmobService: PrismaDmobService,
     _filSparkService: FilSparkService,
   ): Promise<void> {
     const result = await prismaDmobService.$queryRawTyped(
-      getClientAllocatorDistributionWeekly(),
+      getClientAllocatorDistributionWeeklyAcc(),
     );
 
     const data = result.map((dmobResult) => ({
@@ -23,14 +23,14 @@ export class ClientAllocatorDistributionRunner implements AggregationRunner {
       sum_of_allocations: dmobResult.sum_of_allocations,
     }));
 
-    await prismaService.$executeRaw`truncate client_allocator_distribution_weekly;`;
-    await prismaService.client_allocator_distribution_weekly.createMany({
+    await prismaService.$executeRaw`truncate client_allocator_distribution_weekly_acc;`;
+    await prismaService.client_allocator_distribution_weekly_acc.createMany({
       data,
     });
   }
 
   getFilledTables(): AggregationTable[] {
-    return [AggregationTable.ClientAllocatorDistributionWeekly];
+    return [AggregationTable.ClientAllocatorDistributionWeeklyAcc];
   }
 
   getDependingTables(): AggregationTable[] {
@@ -38,6 +38,6 @@ export class ClientAllocatorDistributionRunner implements AggregationRunner {
   }
 
   getName(): string {
-    return 'Client/Allocator Distribution Runner';
+    return 'Client/Allocator Distribution Acc Runner';
   }
 }
