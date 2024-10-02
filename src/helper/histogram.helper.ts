@@ -14,7 +14,7 @@ export class HistogramHelper {
       week: Date;
     }[],
     totalCount: number,
-  ) {
+  ): Promise<HistogramWeekResponseDto> {
     const resultsByWeek = groupBy(results, (p) => p.week);
 
     const histogramWeekDtos: HistogramWeekDto[] = [];

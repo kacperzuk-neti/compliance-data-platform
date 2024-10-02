@@ -5,7 +5,7 @@ import {
   getProviderClientsWeekly,
   getProviderRetrievability,
 } from '../../../prisma/generated/client/sql';
-import { RetrievabilityWeekResponseDto } from '../../types/retrievabilityWeekResponseDto';
+import { RetrievabilityWeekResponseDto } from '../../types/retrievabilityWeekResponse.dto';
 import { HistogramHelper } from '../../helper/histogram.helper';
 
 @Injectable()
