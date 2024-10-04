@@ -1,15 +1,15 @@
 export class HistogramDto {
   valueFromExclusive: number | null;
-  valueToExclusive: number | null;
+  valueToInclusive: number | null;
   count: number | null;
 
   constructor(
     valueFromExclusive: number | null,
-    valueToExclusive: number | null,
+    valueToInclusive: number | null,
     count: number | null,
   ) {
     this.valueFromExclusive = valueFromExclusive;
-    this.valueToExclusive = valueToExclusive;
+    this.valueToInclusive = valueToInclusive;
     this.count = count;
   }
 }

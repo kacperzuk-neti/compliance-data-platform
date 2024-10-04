@@ -47,7 +47,7 @@ export class HistogramHelper {
       const missingValues = allBucketTopValues.filter(
         (topValue) =>
           !histogramWeekDto.results.some(
-            (p) => p.valueToExclusive === topValue,
+            (p) => p.valueToInclusive === topValue,
           ),
       );
 
@@ -57,7 +57,7 @@ export class HistogramHelper {
         );
 
         histogramWeekDto.results.sort(
-          (a, b) => a.valueToExclusive - b.valueToExclusive,
+          (a, b) => a.valueToInclusive - b.valueToInclusive,
         );
       }
     }
@@ -70,16 +70,16 @@ export class HistogramHelper {
   ) {
     const maxRangeTopValue = Math.max(
       ...histogramWeekDtos.flatMap((p) =>
-        p.results.map((r) => r.valueToExclusive),
+        p.results.map((r) => r.valueToInclusive),
       ),
     );
 
     const maxHistogramEntry = histogramWeekDtos
       .flatMap((p) => p.results)
-      .find((p) => p.valueToExclusive === maxRangeTopValue);
+      .find((p) => p.valueToInclusive === maxRangeTopValue);
 
     const maxMinSpan =
-      maxHistogramEntry.valueToExclusive - maxHistogramEntry.valueFromExclusive;
+      maxHistogramEntry.valueToInclusive - maxHistogramEntry.valueFromExclusive;
 
     const allBucketTopValues: number[] = [];
     for (let i = maxRangeTopValue; i > 0; i -= maxMinSpan) {
