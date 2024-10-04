@@ -119,7 +119,7 @@ export class AllocatorService {
         if (wp.num_of_clients > 3) complianceScore++;
         if (
           wp.biggest_client_total_deal_size * 100n <=
-          33n * wp.total_deal_size
+          30n * wp.total_deal_size
         )
           complianceScore++;
 
