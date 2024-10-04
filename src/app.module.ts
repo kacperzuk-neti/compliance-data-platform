@@ -27,6 +27,10 @@ import { AllocatorsAccRunner } from './aggregation/runners/allocators-acc.runner
 import { ClientAllocatorDistributionAccRunner } from './aggregation/runners/client-allocator-distribution-acc.runner';
 import { ClientProviderDistributionAccRunner } from './aggregation/runners/client-provider-distribution-acc.runner';
 import { ProvidersAccRunner } from './aggregation/runners/providers-acc.runner';
+import { ProvidersAccController } from './controller/stats/accumulative/providers/providers.controller';
+import { ProviderAccService } from './service/accumulative/provider/provider.service';
+import { AllocatorsAccController } from './controller/stats/accumulative/allocators/allocators.controller';
+import { AllocatorAccService } from './service/accumulative/allocator/allocator.service';
 
 @Module({
   imports: [
@@ -34,7 +38,12 @@ import { ProvidersAccRunner } from './aggregation/runners/providers-acc.runner';
     ScheduleModule.forRoot(),
     HttpModule.register({ timeout: 5000 }),
   ],
-  controllers: [ProvidersController, AllocatorsController],
+  controllers: [
+    ProvidersController,
+    AllocatorsController,
+    ProvidersAccController,
+    AllocatorsAccController,
+  ],
   providers: [
     AggregationService,
     AggregationTasksService,
@@ -58,6 +67,8 @@ import { ProvidersAccRunner } from './aggregation/runners/providers-acc.runner';
     ProviderService,
     AllocatorService,
     HistogramHelper,
+    ProviderAccService,
+    AllocatorAccService,
     {
       provide: 'AggregationRunner',
       useFactory: (
