@@ -20,6 +20,7 @@ import { ProvidersRunner } from './aggregation/runners/providers.runner';
 import { UnifiedVerifiedDealRunner } from './aggregation/runners/unified-verified-deal.runner';
 import { HttpModule } from '@nestjs/axios';
 import { FilSparkService } from './filspark/filspark.service';
+import { ProviderRetrievabilityBackfillRunner } from './aggregation/runners/provider-retrievability-backfill.runner';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { FilSparkService } from './filspark/filspark.service';
     ClientReplicaDistributionRunner,
     ProviderFirstClientRunner,
     ProviderRetrievabilityRunner,
+    ProviderRetrievabilityBackfillRunner,
     ProvidersRunner,
     UnifiedVerifiedDealRunner,
     {
@@ -56,6 +58,7 @@ import { FilSparkService } from './filspark/filspark.service';
         clientReplicaDistributionRunner,
         providerFirstClientRunner,
         providerRetrievabilityRunner,
+        providerRetrievabilityBackfillRunner,
         providersRunner,
         unifiedVerifiedDealRunner,
       ) => [
@@ -67,6 +70,7 @@ import { FilSparkService } from './filspark/filspark.service';
         clientReplicaDistributionRunner,
         providerFirstClientRunner,
         providerRetrievabilityRunner,
+        providerRetrievabilityBackfillRunner,
         providersRunner,
         unifiedVerifiedDealRunner,
       ],
@@ -79,6 +83,7 @@ import { FilSparkService } from './filspark/filspark.service';
         ClientReplicaDistributionRunner,
         ProviderFirstClientRunner,
         ProviderRetrievabilityRunner,
+        ProviderRetrievabilityBackfillRunner,
         ProvidersRunner,
         UnifiedVerifiedDealRunner,
       ],
