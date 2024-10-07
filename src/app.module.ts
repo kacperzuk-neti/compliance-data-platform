@@ -18,6 +18,7 @@ import { ProvidersRunner } from './aggregation/runners/providers.runner';
 import { UnifiedVerifiedDealRunner } from './aggregation/runners/unified-verified-deal.runner';
 import { HttpModule } from '@nestjs/axios';
 import { FilSparkService } from './filspark/filspark.service';
+import { ProviderRetrievabilityBackfillRunner } from './aggregation/runners/provider-retrievability-backfill.runner';
 import { ProvidersController } from './controller/stats/providers/providers.controller';
 import { ProviderService } from './service/provider/provider.service';
 import { AllocatorsController } from './controller/stats/allocators/allocators.controller';
@@ -45,6 +46,7 @@ import { HistogramHelper } from './helper/histogram.helper';
     ClientReplicaDistributionRunner,
     ProviderFirstClientRunner,
     ProviderRetrievabilityRunner,
+    ProviderRetrievabilityBackfillRunner,
     ProvidersRunner,
     UnifiedVerifiedDealRunner,
     ProviderService,
@@ -61,6 +63,7 @@ import { HistogramHelper } from './helper/histogram.helper';
         clientReplicaDistributionRunner,
         providerFirstClientRunner,
         providerRetrievabilityRunner,
+        providerRetrievabilityBackfillRunner,
         providersRunner,
         unifiedVerifiedDealRunner,
       ) => [
@@ -72,6 +75,7 @@ import { HistogramHelper } from './helper/histogram.helper';
         clientReplicaDistributionRunner,
         providerFirstClientRunner,
         providerRetrievabilityRunner,
+        providerRetrievabilityBackfillRunner,
         providersRunner,
         unifiedVerifiedDealRunner,
       ],
@@ -84,6 +88,7 @@ import { HistogramHelper } from './helper/histogram.helper';
         ClientReplicaDistributionRunner,
         ProviderFirstClientRunner,
         ProviderRetrievabilityRunner,
+        ProviderRetrievabilityBackfillRunner,
         ProvidersRunner,
         UnifiedVerifiedDealRunner,
       ],
