@@ -50,6 +50,17 @@ export class ProviderService {
   }
 
   async getProviderRetrievability() {
+    const lastWeek = await this.prismaService.providers_weekly.findFirstOrThrow(
+      {
+        select: {
+          week: true,
+        },
+        orderBy: {
+          week: 'desc',
+        },
+      },
+    );
+
     const providerCountAndAverageSuccessRate = await this.prismaService
       .$queryRaw<
       [
@@ -59,8 +70,8 @@ export class ProviderService {
         },
       ]
     >`select count(distinct provider)::int,
-             100 * avg(success_rate) as "averageSuccessRate"
-      from provider_retrievability_daily;`;
+             100 * avg(avg_retrievability_success_rate) as "averageSuccessRate"
+      from providers_weekly where week = ${lastWeek.week};`;
 
     const weeklyHistogramResult =
       await this.histogramHelper.getWeeklyHistogramResult(
