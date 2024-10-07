@@ -19,10 +19,23 @@ export class AllocatorService {
   ) {}
 
   async getAllocatorRetrievability() {
+    const lastWeek =
+      await this.prismaService.allocators_weekly.findFirstOrThrow({
+        select: {
+          week: true,
+        },
+        orderBy: {
+          week: 'desc',
+        },
+      });
+
     const averageSuccessRate =
       await this.prismaService.allocators_weekly.aggregate({
         _avg: {
           avg_weighted_retrievability_success_rate: true,
+        },
+        where: {
+          week: lastWeek.week,
         },
       });
 
