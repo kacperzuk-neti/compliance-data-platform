@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../db/prisma.service';
 import {
   getAllocatorBiggestClientDistribution,
@@ -10,6 +10,7 @@ import { groupBy } from 'lodash';
 import { ProviderComplianceScoreRange } from '../../types/providerComplianceScoreRange';
 import { SpsComplianceWeekResponseDto } from '../../types/spsComplianceWeekResponse.dto';
 import { SpsComplianceWeekDto } from '../../types/spsComplianceWeek.dto';
+import { differenceInCalendarDays } from 'date-fns';
 
 @Injectable()
 export class AllocatorService {
@@ -19,15 +20,31 @@ export class AllocatorService {
   ) {}
 
   async getAllocatorRetrievability() {
-    const lastWeek =
-      await this.prismaService.allocators_weekly.findFirstOrThrow({
-        select: {
-          week: true,
+    const allocatorWeeks = await this.prismaService.allocators_weekly.findMany({
+      select: {
+        week: true,
+      },
+      orderBy: {
+        week: 'desc',
+      },
+      where: {
+        week: {
+          lte: new Date(),
         },
-        orderBy: {
-          week: 'desc',
-        },
-      });
+      },
+      skip: 0,
+      take: 2,
+    });
+
+    const lastStoredFullWeek = allocatorWeeks.find(
+      (p) => differenceInCalendarDays(new Date(), p.week) >= 7,
+    );
+    if (!lastStoredFullWeek) {
+      throw new HttpException(
+        'No data for full week present yet',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
 
     const averageSuccessRate =
       await this.prismaService.allocators_weekly.aggregate({
@@ -35,7 +52,7 @@ export class AllocatorService {
           avg_weighted_retrievability_success_rate: true,
         },
         where: {
-          week: lastWeek.week,
+          week: lastStoredFullWeek.week,
         },
       });
 
