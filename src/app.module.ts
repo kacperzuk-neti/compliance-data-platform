@@ -29,9 +29,7 @@ import { ClientAllocatorDistributionAccRunner } from './aggregation/runners/clie
 import { ClientProviderDistributionAccRunner } from './aggregation/runners/client-provider-distribution-acc.runner';
 import { ProvidersAccRunner } from './aggregation/runners/providers-acc.runner';
 import { ProvidersAccController } from './controller/stats/accumulative/providers/providers.controller';
-import { ProviderAccService } from './service/accumulative/provider/provider.service';
 import { AllocatorsAccController } from './controller/stats/accumulative/allocators/allocators.controller';
-import { AllocatorAccService } from './service/accumulative/allocator/allocator.service';
 
 @Module({
   imports: [
@@ -69,8 +67,6 @@ import { AllocatorAccService } from './service/accumulative/allocator/allocator.
     ProviderService,
     AllocatorService,
     HistogramHelper,
-    ProviderAccService,
-    AllocatorAccService,
     {
       provide: 'AggregationRunner',
       useFactory: (

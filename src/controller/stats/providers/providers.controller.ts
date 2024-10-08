@@ -7,16 +7,16 @@ export class ProvidersController {
 
   @Get('clients')
   async getProviderClients() {
-    return await this.providerService.getProviderClients();
+    return await this.providerService.getProviderClients(false);
   }
 
   @Get('biggest-client-distribution')
   async getProviderBiggestClientDistribution() {
-    return await this.providerService.getProviderBiggestClientDistribution();
+    return await this.providerService.getProviderBiggestClientDistribution(false);
   }
 
   @Get('retrievability')
   async getProviderRetrievability() {
-    return await this.providerService.getProviderRetrievability();
+    return await this.providerService.getProviderRetrievability(false);
   }
 }

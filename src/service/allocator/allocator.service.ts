@@ -3,6 +3,8 @@ import { PrismaService } from '../../db/prisma.service';
 import {
   getAllocatorBiggestClientDistribution,
   getAllocatorRetrievability,
+  getAllocatorBiggestClientDistributionAcc,
+  getAllocatorRetrievabilityAcc,
 } from '../../../prisma/generated/client/sql';
 import { HistogramHelper } from '../../helper/histogram.helper';
 import { RetrievabilityWeekResponseDto } from '../../types/retrievabilityWeekResponse.dto';
@@ -11,6 +13,8 @@ import { ProviderComplianceScoreRange } from '../../types/providerComplianceScor
 import { SpsComplianceWeekResponseDto } from '../../types/spsComplianceWeekResponse.dto';
 import { SpsComplianceWeekDto } from '../../types/spsComplianceWeek.dto';
 import { DateTime } from 'luxon';
+import { Prisma } from 'prisma/generated/client';
+import { modelName } from 'src/helper/prisma.helper';
 
 @Injectable()
 export class AllocatorService {
@@ -19,21 +23,34 @@ export class AllocatorService {
     private readonly histogramHelper: HistogramHelper,
   ) {}
 
-  async getAllocatorRetrievability() {
-    const averageSuccessRate =
-      await this.prismaService.allocators_weekly.aggregate({
-        _avg: {
-          avg_weighted_retrievability_success_rate: true,
-        },
-        where: {
-          week: DateTime.now()
-            .toUTC()
-            .minus({ week: 1 })
-            .startOf('week')
-            .toJSDate(),
-        },
-      });
+  async getAllocatorRetrievability(isAccumulative: boolean) {
+    const lastWeek = DateTime.now()
+      .toUTC()
+      .minus({ week: 1 })
+      .startOf('week')
+      .toJSDate();
 
+    const averageSuccessRate = isAccumulative
+      ? await this.prismaService.allocators_weekly_acc.aggregate({
+          _avg: {
+            avg_weighted_retrievability_success_rate: true,
+          },
+          where: {
+            week: lastWeek,
+          },
+        })
+      : await this.prismaService.allocators_weekly.aggregate({
+          _avg: {
+            avg_weighted_retrievability_success_rate: true,
+          },
+          where: {
+            week: lastWeek,
+          },
+        });
+
+    const clientAllocatorDistributionWeeklyTable = isAccumulative
+      ? Prisma.ModelName.client_allocator_distribution_weekly_acc
+      : Prisma.ModelName.client_allocator_distribution_weekly;
     const allocatorCountResult = await this.prismaService.$queryRaw<
       [
         {
@@ -41,11 +58,14 @@ export class AllocatorService {
         },
       ]
     >`select count(distinct allocator)::int
-      from client_allocator_distribution_weekly`;
+      from ${modelName(clientAllocatorDistributionWeeklyTable)}`;
 
+    const query = isAccumulative
+      ? getAllocatorRetrievabilityAcc
+      : getAllocatorRetrievability;
     const weeklyHistogramResult =
       await this.histogramHelper.getWeeklyHistogramResult(
-        await this.prismaService.$queryRawTyped(getAllocatorRetrievability()),
+        await this.prismaService.$queryRawTyped(query()),
         allocatorCountResult[0].count,
       );
 
@@ -55,7 +75,10 @@ export class AllocatorService {
     );
   }
 
-  async getAllocatorBiggestClientDistribution() {
+  async getAllocatorBiggestClientDistribution(isAccumulative: boolean) {
+    const clientAllocatorDistributionWeeklyTable = isAccumulative
+      ? Prisma.ModelName.client_allocator_distribution_weekly_acc
+      : Prisma.ModelName.client_allocator_distribution_weekly;
     const allocatorCountResult = await this.prismaService.$queryRaw<
       [
         {
@@ -63,33 +86,52 @@ export class AllocatorService {
         },
       ]
     >`select count(distinct allocator)::int
-      from client_allocator_distribution_weekly`;
+      from ${modelName(clientAllocatorDistributionWeeklyTable)}`;
 
+    const query = isAccumulative
+      ? getAllocatorBiggestClientDistributionAcc
+      : getAllocatorBiggestClientDistribution;
     return await this.histogramHelper.getWeeklyHistogramResult(
-      await this.prismaService.$queryRawTyped(
-        getAllocatorBiggestClientDistribution(),
-      ),
+      await this.prismaService.$queryRawTyped(query()),
       allocatorCountResult[0].count,
     );
   }
 
-  async getAllocatorSpsCompliance(): Promise<SpsComplianceWeekResponseDto> {
-    const weeks = await this.prismaService.providers_weekly
-      .findMany({
-        distinct: ['week'],
-        select: {
-          week: true,
-        },
-      })
-      .then((r) => r.map((p) => p.week));
+  async getAllocatorSpsCompliance(
+    isAccumulative: boolean,
+  ): Promise<SpsComplianceWeekResponseDto> {
+    const weeks = isAccumulative
+      ? await this.prismaService.providers_weekly_acc
+          .findMany({
+            distinct: ['week'],
+            select: {
+              week: true,
+            },
+          })
+          .then((r) => r.map((p) => p.week))
+      : await this.prismaService.providers_weekly
+          .findMany({
+            distinct: ['week'],
+            select: {
+              week: true,
+            },
+          })
+          .then((r) => r.map((p) => p.week));
 
     const allocatorCount = (
-      await this.prismaService.allocators_weekly.findMany({
-        distinct: ['allocator'],
-        select: {
-          allocator: true,
-        },
-      })
+      isAccumulative
+        ? await this.prismaService.allocators_weekly_acc.findMany({
+            distinct: ['allocator'],
+            select: {
+              allocator: true,
+            },
+          })
+        : await this.prismaService.allocators_weekly.findMany({
+            distinct: ['allocator'],
+            select: {
+              allocator: true,
+            },
+          })
     ).length;
 
     const calculationResults: {
@@ -101,21 +143,35 @@ export class AllocatorService {
       week: Date;
     }[] = [];
     for (const week of weeks) {
-      const thisWeekAverageRetrievability =
-        await this.prismaService.providers_weekly.aggregate({
-          _avg: {
-            avg_retrievability_success_rate: true,
-          },
-          where: {
-            week: week,
-          },
-        });
+      const thisWeekAverageRetrievability = isAccumulative
+        ? await this.prismaService.providers_weekly_acc.aggregate({
+            _avg: {
+              avg_retrievability_success_rate: true,
+            },
+            where: {
+              week: week,
+            },
+          })
+        : await this.prismaService.providers_weekly.aggregate({
+            _avg: {
+              avg_retrievability_success_rate: true,
+            },
+            where: {
+              week: week,
+            },
+          });
 
-      const weekProviders = await this.prismaService.providers_weekly.findMany({
-        where: {
-          week: week,
-        },
-      });
+      const weekProviders = isAccumulative
+        ? await this.prismaService.providers_weekly_acc.findMany({
+            where: {
+              week: week,
+            },
+          })
+        : await this.prismaService.providers_weekly.findMany({
+            where: {
+              week: week,
+            },
+          });
 
       const weekProvidersCompliance = weekProviders.map((wp) => {
         let complianceScore = 0;
@@ -137,16 +193,29 @@ export class AllocatorService {
         };
       });
 
-      const weekAllocatorsWithClients =
-        await this.prismaService.client_allocator_distribution_weekly.findMany({
-          where: {
-            week: week,
-          },
-          select: {
-            client: true,
-            allocator: true,
-          },
-        });
+      const weekAllocatorsWithClients = isAccumulative
+        ? await this.prismaService.client_allocator_distribution_weekly_acc.findMany(
+            {
+              where: {
+                week: week,
+              },
+              select: {
+                client: true,
+                allocator: true,
+              },
+            },
+          )
+        : await this.prismaService.client_allocator_distribution_weekly.findMany(
+            {
+              where: {
+                week: week,
+              },
+              select: {
+                client: true,
+                allocator: true,
+              },
+            },
+          );
 
       const byAllocators = groupBy(
         weekAllocatorsWithClients,
@@ -162,20 +231,33 @@ export class AllocatorService {
       for (const allocator in byAllocators) {
         const clients = byAllocators[allocator].map((p) => p.client);
 
-        const providers =
-          await this.prismaService.client_provider_distribution_weekly
-            .findMany({
-              where: {
-                week: week,
-                client: {
-                  in: clients,
+        const providers = isAccumulative
+          ? await this.prismaService.client_provider_distribution_weekly_acc
+              .findMany({
+                where: {
+                  week: week,
+                  client: {
+                    in: clients,
+                  },
                 },
-              },
-              select: {
-                provider: true,
-              },
-            })
-            .then((r) => r.map((p) => p.provider));
+                select: {
+                  provider: true,
+                },
+              })
+              .then((r) => r.map((p) => p.provider))
+          : await this.prismaService.client_provider_distribution_weekly
+              .findMany({
+                where: {
+                  week: week,
+                  client: {
+                    in: clients,
+                  },
+                },
+                select: {
+                  provider: true,
+                },
+              })
+              .then((r) => r.map((p) => p.provider));
 
         weekResult.push({
           allocator: allocator,
