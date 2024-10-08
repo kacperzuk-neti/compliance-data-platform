@@ -2,12 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../db/prisma.service';
 import {
   getProviderBiggestClientDistribution,
+  getProviderBiggestClientDistributionAcc,
   getProviderClientsWeekly,
+  getProviderClientsWeeklyAcc,
   getProviderRetrievability,
+  getProviderRetrievabilityAcc,
 } from '../../../prisma/generated/client/sql';
 import { RetrievabilityWeekResponseDto } from '../../types/retrievabilityWeekResponse.dto';
 import { HistogramHelper } from '../../helper/histogram.helper';
 import { DateTime } from 'luxon';
+import { Prisma } from 'prisma/generated/client';
+import { modelName } from 'src/helper/prisma.helper';
 
 @Injectable()
 export class ProviderService {
@@ -16,7 +21,10 @@ export class ProviderService {
     private readonly histogramHelper: HistogramHelper,
   ) {}
 
-  async getProviderClients() {
+  async getProviderClients(isAccumulative: boolean) {
+    const clientProviderDistributionWeeklyTable = isAccumulative
+      ? Prisma.ModelName.client_provider_distribution_weekly_acc
+      : Prisma.ModelName.client_provider_distribution_weekly;
     const providerCountResult = await this.prismaService.$queryRaw<
       [
         {
@@ -24,15 +32,21 @@ export class ProviderService {
         },
       ]
     >`select count(distinct provider)::int
-      from client_provider_distribution_weekly`;
+      from ${modelName(clientProviderDistributionWeeklyTable)}`;
 
+    const query = isAccumulative
+      ? getProviderClientsWeeklyAcc
+      : getProviderClientsWeekly;
     return await this.histogramHelper.getWeeklyHistogramResult(
-      await this.prismaService.$queryRawTyped(getProviderClientsWeekly()),
+      await this.prismaService.$queryRawTyped(query()),
       providerCountResult[0].count,
     );
   }
 
-  async getProviderBiggestClientDistribution() {
+  async getProviderBiggestClientDistribution(isAccumulative: boolean) {
+    const clientProviderDistributionWeeklyTable = isAccumulative
+      ? Prisma.ModelName.client_provider_distribution_weekly_acc
+      : Prisma.ModelName.client_provider_distribution_weekly;
     const providerCountResult = await this.prismaService.$queryRaw<
       [
         {
@@ -40,17 +54,21 @@ export class ProviderService {
         },
       ]
     >`select count(distinct provider)::int
-      from client_provider_distribution_weekly`;
+      from ${modelName(clientProviderDistributionWeeklyTable)}`;
 
+    const query = isAccumulative
+      ? getProviderBiggestClientDistributionAcc
+      : getProviderBiggestClientDistribution;
     return await this.histogramHelper.getWeeklyHistogramResult(
-      await this.prismaService.$queryRawTyped(
-        getProviderBiggestClientDistribution(),
-      ),
+      await this.prismaService.$queryRawTyped(query()),
       providerCountResult[0].count,
     );
   }
 
-  async getProviderRetrievability() {
+  async getProviderRetrievability(isAccumulative: boolean) {
+    const providersWeeklyTable = isAccumulative
+      ? Prisma.ModelName.providers_weekly_acc
+      : Prisma.ModelName.providers_weekly;
     const providerCountAndAverageSuccessRate = await this.prismaService
       .$queryRaw<
       [
@@ -61,11 +79,14 @@ export class ProviderService {
       ]
     >`select count(distinct provider)::int,
              100 * avg(avg_retrievability_success_rate) as "averageSuccessRate"
-      from providers_weekly where week = ${DateTime.now().toUTC().minus({ week: 1 }).startOf('week').toJSDate()};`;
+      from ${modelName(providersWeeklyTable)} where week = ${DateTime.now().toUTC().minus({ week: 1 }).startOf('week').toJSDate()};`;
 
+    const query = isAccumulative
+      ? getProviderRetrievabilityAcc
+      : getProviderRetrievability;
     const weeklyHistogramResult =
       await this.histogramHelper.getWeeklyHistogramResult(
-        await this.prismaService.$queryRawTyped(getProviderRetrievability()),
+        await this.prismaService.$queryRawTyped(query()),
         providerCountAndAverageSuccessRate[0].count,
       );
 
