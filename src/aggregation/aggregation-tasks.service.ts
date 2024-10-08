@@ -14,14 +14,23 @@ export class AggregationTasksService {
     if (!this.aggregationJobInProgress) {
       this.aggregationJobInProgress = true;
 
-      try {
-        this.logger.debug('Starting Aggregations');
+      let success = false;
+      let executionNumber = 0;
+      //retry up to 3 times in case of error
+      while (!success && executionNumber < 3) {
+        try {
+          this.logger.debug('Starting Aggregations');
 
-        await this.aggregationService.runAggregations();
+          await this.aggregationService.runAggregations();
+          success = true;
 
-        this.logger.debug('Finished Aggregations');
-      } catch (err) {
-        this.logger.error(`Error during Aggregations job: ${err}`);
+          this.logger.debug('Finished Aggregations');
+        } catch (err) {
+          this.logger.error(
+            `Error during Aggregations job, execution ${executionNumber}: ${err}`,
+          );
+          executionNumber++;
+        }
       }
 
       this.aggregationJobInProgress = false;

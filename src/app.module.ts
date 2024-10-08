@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AggregationTasksService } from './aggregation/aggregation-tasks.service';
@@ -21,6 +19,11 @@ import { UnifiedVerifiedDealRunner } from './aggregation/runners/unified-verifie
 import { HttpModule } from '@nestjs/axios';
 import { FilSparkService } from './filspark/filspark.service';
 import { ProviderRetrievabilityBackfillRunner } from './aggregation/runners/provider-retrievability-backfill.runner';
+import { ProvidersController } from './controller/stats/providers/providers.controller';
+import { ProviderService } from './service/provider/provider.service';
+import { AllocatorsController } from './controller/stats/allocators/allocators.controller';
+import { AllocatorService } from './service/allocator/allocator.service';
+import { HistogramHelper } from './helper/histogram.helper';
 
 @Module({
   imports: [
@@ -28,9 +31,8 @@ import { ProviderRetrievabilityBackfillRunner } from './aggregation/runners/prov
     ScheduleModule.forRoot(),
     HttpModule.register({ timeout: 5000 }),
   ],
-  controllers: [AppController],
+  controllers: [ProvidersController, AllocatorsController],
   providers: [
-    AppService,
     AggregationService,
     AggregationTasksService,
     PrismaService,
@@ -47,6 +49,9 @@ import { ProviderRetrievabilityBackfillRunner } from './aggregation/runners/prov
     ProviderRetrievabilityBackfillRunner,
     ProvidersRunner,
     UnifiedVerifiedDealRunner,
+    ProviderService,
+    AllocatorService,
+    HistogramHelper,
     {
       provide: 'AggregationRunner',
       useFactory: (
