@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../db/prisma.service';
 import {
   getProviderBiggestClientDistribution,
@@ -7,7 +7,7 @@ import {
 } from '../../../prisma/generated/client/sql';
 import { RetrievabilityWeekResponseDto } from '../../types/retrievabilityWeekResponse.dto';
 import { HistogramHelper } from '../../helper/histogram.helper';
-import { differenceInCalendarDays } from 'date-fns';
+import { DateTime } from 'luxon';
 
 @Injectable()
 export class ProviderService {
@@ -51,32 +51,6 @@ export class ProviderService {
   }
 
   async getProviderRetrievability() {
-    const providerWeeks = await this.prismaService.providers_weekly.findMany({
-      select: {
-        week: true,
-      },
-      orderBy: {
-        week: 'desc',
-      },
-      where: {
-        week: {
-          lte: new Date(),
-        },
-      },
-      skip: 0,
-      take: 2,
-    });
-
-    const lastStoredFullWeek = providerWeeks.find(
-      (p) => differenceInCalendarDays(new Date(), p.week) >= 7,
-    );
-    if (!lastStoredFullWeek) {
-      throw new HttpException(
-        'No data for full week present yet',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-
     const providerCountAndAverageSuccessRate = await this.prismaService
       .$queryRaw<
       [
@@ -87,7 +61,7 @@ export class ProviderService {
       ]
     >`select count(distinct provider)::int,
              100 * avg(avg_retrievability_success_rate) as "averageSuccessRate"
-      from providers_weekly where week = ${lastStoredFullWeek.week};`;
+      from providers_weekly where week = ${DateTime.now().toUTC().minus({ week: 1 }).startOf('week').toJSDate()};`;
 
     const weeklyHistogramResult =
       await this.histogramHelper.getWeeklyHistogramResult(
