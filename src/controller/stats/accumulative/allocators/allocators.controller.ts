@@ -12,7 +12,9 @@ export class AllocatorsAccController {
 
   @Get('biggest-client-distribution')
   async getAllocatorBiggestClientDistribution() {
-    return await this.allocatorAccService.getAllocatorBiggestClientDistribution(true);
+    return await this.allocatorAccService.getAllocatorBiggestClientDistribution(
+      true,
+    );
   }
 
   @Get('sps-compliance')

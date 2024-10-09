@@ -12,7 +12,9 @@ export class ProvidersAccController {
 
   @Get('biggest-client-distribution')
   async getProviderBiggestClientDistribution() {
-    return await this.providerAccService.getProviderBiggestClientDistribution(true);
+    return await this.providerAccService.getProviderBiggestClientDistribution(
+      true,
+    );
   }
 
   @Get('retrievability')
